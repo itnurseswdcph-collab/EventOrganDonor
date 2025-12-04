@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expo People Counter</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #f0f0f0; }
+        #canvas-container { position: relative; display: inline-block; margin-top: 20px; }
+        video { display: none; } /* ซ่อนวิดีโอต้นฉบับ เราจะวาดลง Canvas แทน */
+        canvas { border: 2px solid #333; border-radius: 8px; max-width: 100%; }
+        .status { margin: 10px; font-size: 1.2em; color: #007bff; }
+        .log { height: 100px; overflow-y: scroll; border: 1px solid #ccc; background: white; margin: 10px auto; width: 90%; font-size: 0.9em; text-align: left; padding: 5px;}
+        button { padding: 10px 20px; font-size: 1rem; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px;}
+    </style>
+</head>
+<body>
+
+    <h2>🎥 ระบบนับคนเข้าบูธ (AI Counter)</h2>
+    <div id="loading">กำลังโหลด AI Model... (กรุณารอสักครู่)</div>
+    
+    <div id="canvas-container">
+        <video id="video" playsinline autoplay muted></video>
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="status">
+        นับล่าสุด: <span id="countDisplay">0</span> คน 
+        <br><small>(ส่งข้อมูลทุกครั้งที่ข้ามเส้น)</small>
+    </div>
+
+    <button onclick="startCamera()">🔴 เริ่มกล้อง</button>
+    <div class="log" id="logArea">Log การทำงาน...</div>
+
+    <script>
+        // --- ตั้งค่าระบบ ---
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyjbm3yoBaly8pVeXKz1QTpieUe_KjjNWpatAgq_mx3jtkX7zs6vFKm8DXzBCkxNrJm/exec"; // <--- ใส่ URL ของคุณที่นี่ !!!
+        const LINE_POSITION_PERCENT = 0.6; // เส้นอยู่ที่ 60% ของความสูงจอ (ค่อนไปทางล่าง)
+        const COOLDOWN_TIME = 2000; // ห้ามส่งข้อมูลซ้ำภายใน 2 วินาที
+        
+        // ตัวแปรระบบ
+        let model;
+        let video = document.getElementById("video");
+        let canvas = document.getElementById("canvas");
+        let ctx = canvas.getContext("2d");
+        let lastSentTime = 0;
+        let isModelLoaded = false;
+
+        // โหลดโมเดล AI
+        cocoSsd.load().then(loadedModel => {
+            model = loadedModel;
+            isModelLoaded = true;
+            document.getElementById("loading").innerText = "✅ AI พร้อมทำงาน! กดปุ่มเริ่มกล้องได้เลย";
+            log("AI Loaded success.");
+        });
+
+        async function startCamera() {
+            if (!isModelLoaded) { alert("รอ AI โหลดเสร็จก่อนครับ"); return; }
+            
+            // ขออนุญาตใช้กล้อง
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: 'environment' }, // ใช้กล้องหลัง
+                audio: false 
+            });
+            video.srcObject = stream;
+            
+            video.onloadedmetadata = () => {
+                video.play();
+                // ตั้งขนาด Canvas ให้เท่ากับวิดีโอ
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                detectFrame(); // เริ่มลูปตรวจจับ
+            };
+        }
+
+        async function detectFrame() {
+            // ตรวจจับวัตถุ
+            const predictions = await model.detect(video);
+            
+            // ล้างหน้าจอเพื่อวาดใหม่
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // วาดเส้น Line Crossing (เส้นสีแดง)
+            const lineY = canvas.height * LINE_POSITION_PERCENT;
+            ctx.beginPath();
+            ctx.moveTo(0, lineY);
+            ctx.lineTo(canvas.width, lineY);
+            ctx.strokeStyle = "red";
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // วาดกรอบและคำนวณ
+            let peopleCount = 0;
+            let crossCount = 0;
+
+            predictions.forEach(prediction => {
+                if (prediction.class === 'person') {
+                    peopleCount++;
+                    
+                    // ดึงพิกัด
+                    const [x, y, width, height] = prediction.bbox;
+                    const centerX = x + (width / 2);
+                    const centerY = y + (height / 2);
+                    const bottomY = y + height; // จุดเท้า
+
+                    // วาดกรอบคน
+                    ctx.strokeStyle = "#00FFFF";
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x, y, width, height);
+
+                    // วาดจุดกึ่งกลาง
+                    ctx.fillStyle = "yellow";
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, 5, 0, 2 * Math.PI);
+                    ctx.fill();
+
+                    // --- LOGIC การข้ามเส้นแบบง่าย (Trigger Zone) ---
+                    // ถ้าร่างกายส่วนกลาง ทับเส้นพอดี (บวกลบ 20px)
+                    if (Math.abs(centerY - lineY) < 30) {
+                        ctx.strokeStyle = "lime"; // เปลี่ยนสีกรอบเมื่อชนเส้น
+                        ctx.strokeRect(x, y, width, height);
+                        
+                        // เช็คเวลาเพื่อกันส่งซ้ำรัวๆ (Cooldown)
+                        const now = Date.now();
+                        if (now - lastSentTime > COOLDOWN_TIME) {
+                            sendDataToGAS(1); // ส่งค่า 1 คน
+                            lastSentTime = now;
+                            log("🚶 ตรวจพบคนข้ามเส้น! กำลังส่งข้อมูล...");
+                        }
+                    }
+                }
+            });
+
+            requestAnimationFrame(detectFrame); // วนลูปทำซ้ำ
+        }
+
+        function sendDataToGAS(count) {
+            // อัปเดตตัวเลขหน้าจอ
+            let display = document.getElementById("countDisplay");
+            display.innerText = parseInt(display.innerText) + count;
+
+            // ส่งไป GAS แบบเงียบๆ (no-cors)
+            fetch(GAS_URL, {
+                method: "POST",
+                mode: "no-cors", 
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ count: count, type: "entry" })
+            }).then(() => {
+                log("✅ ส่งข้อมูลสำเร็จ: " + new Date().toLocaleTimeString());
+            }).catch(err => {
+                log("❌ Error: " + err);
+            });
+        }
+
+        function log(msg) {
+            const logDiv = document.getElementById("logArea");
+            logDiv.innerHTML += `<div>${msg}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+    </script>
+</body>
+</html>
