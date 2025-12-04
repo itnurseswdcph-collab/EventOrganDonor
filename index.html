@@ -3,207 +3,495 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expo People Counter</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <title>Event Quick Big Win Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { font-family: sans-serif; text-align: center; background: #f0f0f0; padding-bottom: 50px; }
-        #canvas-container { position: relative; display: inline-block; margin-top: 20px; }
-        video { display: none; }
-        canvas { border: 2px solid #333; border-radius: 8px; max-width: 100%; background: #000; }
-        .status { margin: 10px; font-size: 1.2em; color: #007bff; }
-        .log { height: 100px; overflow-y: scroll; border: 1px solid #ccc; background: white; margin: 10px auto; width: 90%; font-size: 0.9em; text-align: left; padding: 5px;}
+        :root {
+            /* Palette จากธีมหมอพร้อมและ Digital Health */
+            --primary-green: #00A69C; 
+            --dark-green: #00566B;
+            --accent-gold: #F39C12;
+            --bg-light: #F0F4F8;
+            --text-dark: #333333;
+            --white: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- 1. HEADER --- */
+        header {
+            background: var(--white);
+            padding: 10px 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--primary-green);
+        }
         
-        /* ปุ่มกดสวยงาม */
-        .btn-group { margin: 15px; }
-        button { padding: 12px 25px; font-size: 1rem; cursor: pointer; border: none; border-radius: 5px; margin: 5px; color: white; font-weight: bold; }
-        .btn-start { background: #28a745; }
-        .btn-start:hover { background: #218838; }
-        .btn-stop { background: #dc3545; }
-        .btn-stop:hover { background: #c82333; }
-        button:disabled { background: #ccc; cursor: not-allowed; }
+        .logo-group-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-img { height: 55px; object-fit: contain; }
+
+        .header-center {
+            text-align: center;
+            flex-grow: 1;
+        }
+        .header-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark-green);
+            margin: 0;
+            line-height: 1.2;
+        }
+        .header-subtitle {
+            font-size: 1.1rem;
+            color: var(--primary-green);
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .logo-group-right img {
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-green);
+        }
+
+        /* --- 2. NAVIGATION --- */
+        .nav-bar {
+            background: var(--dark-green);
+            display: flex;
+            justify-content: center;
+            padding: 10px;
+            gap: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.15);
+            color: var(--white);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-family: 'Prompt', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: var(--accent-gold);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-weight: 600;
+        }
+
+        /* --- 3. CONTENT AREA --- */
+        .content-container {
+            flex-grow: 1;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+            display: none; /* ซ่อนหน้าทั้งหมดก่อน */
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .content-container.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- DASHBOARD STYLES --- */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .refresh-btn {
+            background: var(--white);
+            color: var(--primary-green);
+            border: 2px solid var(--primary-green);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Prompt', sans-serif;
+            transition: 0.3s;
+        }
+        .refresh-btn:hover { background: var(--primary-green); color: white; }
+        .last-update { font-size: 0.9rem; color: #666; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+            border-bottom: 6px solid #ccc;
+        }
+
+        .stat-card.visitor { border-color: var(--primary-green); }
+        .stat-card.organ { border-color: #E74C3C; }
+        .stat-card.eye { border-color: #3498DB; }
+
+        .stat-icon-bg {
+            position: absolute;
+            top: -20px; right: -20px;
+            font-size: 8rem;
+            opacity: 0.05;
+        }
+
+        .stat-icon { font-size: 3.5rem; margin-bottom: 15px; }
+        .visitor .stat-icon { color: var(--primary-green); }
+        .organ .stat-icon { color: #E74C3C; }
+        .eye .stat-icon { color: #3498DB; }
+
+        .stat-number {
+            font-size: 4.5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin: 10px 0;
+            color: var(--text-dark);
+        }
+        .stat-label { font-size: 1.3rem; color: #777; font-weight: 500;}
+
+        /* --- DONATION BUTTONS --- */
+        .donation-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .donate-btn {
+            width: 300px;
+            height: 300px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .donate-btn:active { transform: scale(0.95); }
+
+        .btn-organ { background: linear-gradient(135deg, #FF7675, #D63031); }
+        .btn-eye { background: linear-gradient(135deg, #74B9FF, #0984E3); }
+
+        .donate-btn i { font-size: 6rem; margin-bottom: 25px; }
+        .donate-btn span { font-size: 1.8rem; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+        /* --- COUNTDOWN OVERLAY --- */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .overlay.show { visibility: visible; opacity: 1; }
+        
+        .success-icon { font-size: 5rem; color: #2ecc71; margin-bottom: 20px; animation: bounce 1s infinite; }
+        .overlay h2 { font-size: 2.5rem; margin: 0; }
+        .timer-count { font-size: 8rem; font-weight: bold; color: var(--accent-gold); margin: 20px 0; }
+        
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+        /* --- FOOTER --- */
+        footer {
+            background: var(--white);
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+        .footer-content {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .footer-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #555;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+        .footer-link i { font-size: 1.3rem; color: var(--primary-green); }
+        .footer-link:hover { color: var(--dark-green); }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 15px; }
+            .header-center { order: 2; width: 100%; }
+            .logo-group-left { order: 1; }
+            .logo-group-right { order: 3; }
+            .donate-btn { width: 100%; height: 200px; }
+        }
     </style>
 </head>
 <body>
 
-    <h2>🎥 ระบบนับคนเข้าบูธ (AI Counter)</h2>
-    <div id="loading">กำลังโหลด AI Model... (กรุณารอสักครู่)</div>
-    
-    <div id="canvas-container">
-        <video id="video" playsinline autoplay muted></video>
-        <canvas id="canvas"></canvas>
+    <header>
+        <div class="logo-group-left">
+            <img src="https://r8way.moph.go.th/r8way/img/R8NEWLOGO.png" class="logo-img" alt="R8">
+            <img src="https://skko.moph.go.th/dward/document_file/skko/common_form_upload_file/20160322201256_410195252.png" class="logo-img" alt="SSJ">
+            <img src="https://swdcph.moph.go.th/intranet/login/images/logo_swd.png" class="logo-img" alt="Hospital">
+        </div>
+        
+        <div class="header-center">
+            <h1 class="header-title">Event Quick Big Win "หมอพร้อม SUPER APP"</h1>
+            <h2 class="header-subtitle">บูธกิจกรรมรณรงค์และรับบริจาคอวัยวะ</h2>
+        </div>
+
+        <div class="logo-group-right">
+            <img src="https://play-lh.googleusercontent.com/F320dsJcAfV2fDi8OPF5twpNIFt_s2UdNizM12-PTqLntEqg9S1Sz6ADIWx9bK26n8I=w240-h480-rw" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/MorProm_Logo.png/600px-MorProm_Logo.png'" alt="MorProm">
+        </div>
+    </header>
+
+    <nav class="nav-bar">
+        <button class="nav-btn active" onclick="switchPage('dashboard')">
+            <i class="fa-solid fa-chart-line"></i> สรุปแดชบอร์ด
+        </button>
+        <button class="nav-btn" onclick="switchPage('ai-camera')">
+            <i class="fa-solid fa-video"></i> ระบบนับคน (AI)
+        </button>
+        <button class="nav-btn" onclick="switchPage('donation')">
+            <i class="fa-solid fa-hand-holding-heart"></i> ลงทะเบียนบริจาค
+        </button>
+    </nav>
+
+    <div id="dashboard" class="content-container active">
+        <div class="dashboard-header">
+            <div class="last-update">
+                <i class="fa-solid fa-clock"></i> อัปเดตข้อมูลอัตโนมัติ: <span id="updateTime">-</span>
+            </div>
+            <button class="refresh-btn" onclick="fetchDataManual()">
+                <i class="fa-solid fa-rotate-right"></i> รีเฟรชข้อมูล
+            </button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card visitor">
+                <i class="fa-solid fa-users stat-icon-bg"></i>
+                <i class="fa-solid fa-users stat-icon"></i>
+                <div class="stat-number" id="val-visitor">0</div>
+                <div class="stat-label">จำนวนผู้เข้าชมบูธ</div>
+            </div>
+            <div class="stat-card organ">
+                <i class="fa-solid fa-heart-pulse stat-icon-bg"></i>
+                <i class="fa-solid fa-heart-pulse stat-icon"></i>
+                <div class="stat-number" id="val-organ">0</div>
+                <div class="stat-label">ผู้ลงทะเบียนบริจาคอวัยวะ</div>
+            </div>
+            <div class="stat-card eye">
+                <i class="fa-solid fa-eye stat-icon-bg"></i>
+                <i class="fa-solid fa-eye stat-icon"></i>
+                <div class="stat-number" id="val-eye">0</div>
+                <div class="stat-label">ผู้ลงทะเบียนบริจาคดวงตา</div>
+            </div>
+        </div>
     </div>
 
-    <div class="status">
-        นับล่าสุด: <span id="countDisplay">0</span> คน 
-        <br><small>(ส่งข้อมูลทุกครั้งที่ข้ามเส้น)</small>
+    <div id="ai-camera" class="content-container">
+        <div style="width: 100%; height: 75vh; border-radius: 20px; overflow: hidden; border: 3px solid var(--dark-green); box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <iframe src="https://itnurseswdcph-collab.github.io/AICounter/" style="width:100%; height:100%; border:none;" allow="camera; microphone"></iframe>
+        </div>
+        <p style="text-align: center; color: #777; margin-top: 10px;">
+            <i class="fa-solid fa-circle-info"></i> หากกล้องไม่แสดงผล กรุณาตรวจสอบสิทธิ์การเข้าถึงกล้องบนอุปกรณ์
+        </p>
     </div>
 
-    <div class="btn-group">
-        <button id="btnStart" class="btn-start" onclick="startCamera()">🔴 เริ่มกล้อง</button>
-        <button id="btnStop" class="btn-stop" onclick="stopCamera()" disabled>⏹ หยุด</button>
+    <div id="donation" class="content-container">
+        <h2 style="text-align: center; font-size: 2rem; color: var(--dark-green);">
+            เลือกประเภทการบริจาคเพื่อบันทึกข้อมูล
+        </h2>
+        <div class="donation-wrapper">
+            <button class="donate-btn btn-organ" onclick="sendDonation('organ')">
+                <i class="fa-solid fa-heart-pulse"></i>
+                <span>ลงทะเบียน<br>บริจาคอวัยวะ</span>
+            </button>
+            <button class="donate-btn btn-eye" onclick="sendDonation('eye')">
+                <i class="fa-solid fa-eye"></i>
+                <span>ลงทะเบียน<br>บริจาคดวงตา</span>
+            </button>
+        </div>
     </div>
 
-    <div class="log" id="logArea">Log การทำงาน...</div>
+    <div id="successOverlay" class="overlay">
+        <i class="fa-solid fa-circle-check success-icon"></i>
+        <h2>บันทึกข้อมูลสำเร็จ!</h2>
+        <div class="timer-count" id="countdownTimer">5</div>
+        <p>ระบบจะรีเซ็ตหน้าจอในอีกสักครู่...</p>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <a href="https://swdcph.moph.go.th" target="_blank" class="footer-link">
+                <i class="fa-solid fa-globe"></i> swdcph.moph.go.th
+            </a>
+            <a href="https://www.facebook.com/swdcph" target="_blank" class="footer-link">
+                <i class="fa-brands fa-facebook"></i> รพ.สมเด็จพระยุพราชสว่างแดนดิน
+            </a>
+            <div class="footer-link">
+                <i class="fa-solid fa-phone"></i> 042-721-111
+            </div>
+        </div>
+    </footer>
 
     <script>
-        // --- ตั้งค่าระบบ ---
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyjbm3yoBaly8pVeXKz1QTpieUe_KjjNWpatAgq_mx3jtkX7zs6vFKm8DXzBCkxNrJm/exec"; // <--- ใส่ URL ของคุณที่นี่ !!!
-        const LINE_POSITION_PERCENT = 0.6;
-        const COOLDOWN_TIME = 2000;
-        
-        // ตัวแปรระบบ
-        let model;
-        let video = document.getElementById("video");
-        let canvas = document.getElementById("canvas");
-        let ctx = canvas.getContext("2d");
-        let lastSentTime = 0;
-        let isModelLoaded = false;
-        
-        // ตัวแปรสำคัญสำหรับการหยุด
-        let isStreaming = false; 
-        let animationId = null; // เอาไว้เก็บ ID ของ Loop เพื่อสั่งยกเลิกได้แม่นยำ
+        // --- CONFIGURATION ---
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyjbm3yoBaly8pVeXKz1QTpieUe_KjjNWpatAgq_mx3jtkX7zs6vFKm8DXzBCkxNrJm/exec";
+        const REFRESH_RATE = 5000; // อัปเดตทุก 5 วินาที
 
-        // โหลดโมเดล AI
-        cocoSsd.load().then(loadedModel => {
-            model = loadedModel;
-            isModelLoaded = true;
-            document.getElementById("loading").innerText = "✅ AI พร้อมทำงาน!";
-            log("AI Loaded success.");
-        });
+        // --- PAGE SWITCHING ---
+        function switchPage(pageId) {
+            // ซ่อนทุกหน้า
+            document.querySelectorAll('.content-container').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            
+            // แสดงหน้าเป้าหมาย
+            document.getElementById(pageId).classList.add('active');
+            
+            // Highlight ปุ่ม
+            const buttons = document.querySelectorAll('.nav-btn');
+            if(pageId === 'dashboard') buttons[0].classList.add('active');
+            if(pageId === 'ai-camera') buttons[1].classList.add('active');
+            if(pageId === 'donation') buttons[2].classList.add('active');
 
-        async function startCamera() {
-            if (!isModelLoaded) { alert("รอ AI โหลดเสร็จก่อนครับ"); return; }
-            if (isStreaming) return; // ถ้าทำงานอยู่แล้ว ห้ามกดซ้ำ
+            // ถ้าเข้า Dashboard ให้โหลดข้อมูลทันที
+            if(pageId === 'dashboard') {
+                fetchDataManual();
+            }
+        }
+
+        // --- FETCH DATA LOGIC ---
+        async function fetchDataManual() {
+            const btn = document.querySelector('.refresh-btn i');
+            btn.classList.add('fa-spin'); // หมุนไอคอน
+            document.getElementById('updateTime').innerText = "กำลังโหลด...";
 
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: 'environment' },
-                    audio: false 
-                });
-                video.srcObject = stream;
+                const response = await fetch(GAS_URL);
+                const data = await response.json();
                 
-                video.onloadedmetadata = () => {
-                    video.play();
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    
-                    // ตั้งค่าสถานะ
-                    isStreaming = true;
-                    toggleButtons(true); // ปรับปุ่ม
-                    detectFrame(); // เริ่มลูป
-                    log("เริ่มการทำงานกล้อง");
-                };
-            } catch (err) {
-                alert("ไม่สามารถเปิดกล้องได้: " + err);
+                // อัปเดตตัวเลข
+                updateStat("val-visitor", data.visitor);
+                updateStat("val-organ", data.organ);
+                updateStat("val-eye", data.eye);
+
+                // ลงเวลา
+                const now = new Date();
+                document.getElementById('updateTime').innerText = now.toLocaleTimeString('th-TH');
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById('updateTime').innerText = "เชื่อมต่อไม่ได้";
+            } finally {
+                btn.classList.remove('fa-spin'); // หยุดหมุน
             }
         }
 
-        function stopCamera() {
-            if (!isStreaming) return;
-
-            // 1. หยุด Loop การคำนวณ
-            isStreaming = false;
-            if (animationId) {
-                cancelAnimationFrame(animationId);
+        function updateStat(id, newValue) {
+            const el = document.getElementById(id);
+            const current = parseInt(el.innerText);
+            if (current !== newValue) {
+                el.innerText = newValue;
+                // Animation เล็กน้อยเมื่อเลขเปลี่ยน
+                el.style.transform = "scale(1.2)";
+                el.style.color = "#F39C12";
+                setTimeout(() => {
+                    el.style.transform = "scale(1)";
+                    el.style.color = "#333";
+                }, 300);
             }
-
-            // 2. สั่งปิด Hardware กล้อง (ไฟสีเขียวดับ)
-            const stream = video.srcObject;
-            if (stream) {
-                const tracks = stream.getTracks();
-                tracks.forEach(track => track.stop());
-                video.srcObject = null;
-            }
-
-            // 3. ล้างหน้าจอ Canvas ให้ดำ
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "black";
-            ctx.fillRect(0,0, canvas.width, canvas.height);
-            ctx.fillStyle = "white";
-            ctx.font = "20px Arial";
-            ctx.fillText("หยุดการทำงานแล้ว", 20, 50);
-
-            toggleButtons(false); // ปรับปุ่มคืน
-            log("หยุดการทำงานแล้ว");
         }
 
-        async function detectFrame() {
-            // เช็คก่อนเลยว่าถ้าสั่งหยุดแล้ว ให้เลิกทำทันที
-            if (!isStreaming) return;
+        // --- AUTO REFRESH LOOP ---
+        setInterval(() => {
+            // ทำงานเฉพาะเมื่อหน้า Dashboard เปิดอยู่
+            if (document.getElementById('dashboard').classList.contains('active')) {
+                fetchDataManual();
+            }
+        }, REFRESH_RATE);
 
-            const predictions = await model.detect(video);
+        // --- DONATION LOGIC ---
+        function sendDonation(type) {
+            // 1. แสดง Overlay ทันที
+            const overlay = document.getElementById('successOverlay');
+            const timerDisplay = document.getElementById('countdownTimer');
+            overlay.classList.add('show');
             
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            const lineY = canvas.height * LINE_POSITION_PERCENT;
-            ctx.beginPath();
-            ctx.moveTo(0, lineY);
-            ctx.lineTo(canvas.width, lineY);
-            ctx.strokeStyle = "red";
-            ctx.lineWidth = 4;
-            ctx.stroke();
-
-            predictions.forEach(prediction => {
-                if (prediction.class === 'person') {
-                    const [x, y, width, height] = prediction.bbox;
-                    const centerX = x + (width / 2);
-                    const centerY = y + (height / 2);
-
-                    ctx.strokeStyle = "#00FFFF";
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(x, y, width, height);
-
-                    ctx.fillStyle = "yellow";
-                    ctx.beginPath();
-                    ctx.arc(centerX, centerY, 5, 0, 2 * Math.PI);
-                    ctx.fill();
-
-                    if (Math.abs(centerY - lineY) < 30) {
-                        ctx.strokeStyle = "lime";
-                        ctx.strokeRect(x, y, width, height);
-                        
-                        const now = Date.now();
-                        if (now - lastSentTime > COOLDOWN_TIME) {
-                            sendDataToGAS(1);
-                            lastSentTime = now;
-                            log("🚶 ตรวจพบคนข้ามเส้น! กำลังส่งข้อมูล...");
-                        }
-                    }
-                }
-            });
-
-            // วนลูปและเก็บ ID ไว้เผื่อสั่งหยุด
-            animationId = requestAnimationFrame(detectFrame);
-        }
-
-        function sendDataToGAS(count) {
-            let display = document.getElementById("countDisplay");
-            display.innerText = parseInt(display.innerText) + count;
-
+            // 2. ส่งข้อมูลไป Google Sheets (ใช้ no-cors เพื่อความเร็ว ไม่รอ response)
             fetch(GAS_URL, {
                 method: "POST",
-                mode: "no-cors", 
+                mode: "no-cors",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ count: count, type: "entry" })
-            }).then(() => {
-                log("✅ ส่งข้อมูลสำเร็จ");
-            }).catch(err => {
-                log("❌ Error: " + err);
-            });
+                body: JSON.stringify({ type: type, count: 1 })
+            }).catch(err => console.error("Send Error:", err));
+
+            // 3. นับถอยหลัง 5 วินาที
+            let timeLeft = 5;
+            timerDisplay.innerText = timeLeft;
+
+            const countdown = setInterval(() => {
+                timeLeft--;
+                timerDisplay.innerText = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    overlay.classList.remove('show');
+                    // ถ้าอยากให้ Dashboard อัปเดตทันทีที่กลับไปหน้า Dashboard ก็ทำได้
+                }
+            }, 1000);
         }
 
-        function toggleButtons(isRunning) {
-            document.getElementById("btnStart").disabled = isRunning;
-            document.getElementById("btnStop").disabled = !isRunning;
-        }
+        // เริ่มต้นโหลดข้อมูลครั้งแรก
+        fetchDataManual();
 
-        function log(msg) {
-            const logDiv = document.getElementById("logArea");
-            logDiv.innerHTML += `<div>${msg}</div>`;
-            logDiv.scrollTop = logDiv.scrollHeight;
-        }
     </script>
 </body>
 </html>
