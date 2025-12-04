@@ -7,13 +7,21 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #f0f0f0; }
+        body { font-family: sans-serif; text-align: center; background: #f0f0f0; padding-bottom: 50px; }
         #canvas-container { position: relative; display: inline-block; margin-top: 20px; }
-        video { display: none; } /* ซ่อนวิดีโอต้นฉบับ เราจะวาดลง Canvas แทน */
-        canvas { border: 2px solid #333; border-radius: 8px; max-width: 100%; }
+        video { display: none; }
+        canvas { border: 2px solid #333; border-radius: 8px; max-width: 100%; background: #000; }
         .status { margin: 10px; font-size: 1.2em; color: #007bff; }
         .log { height: 100px; overflow-y: scroll; border: 1px solid #ccc; background: white; margin: 10px auto; width: 90%; font-size: 0.9em; text-align: left; padding: 5px;}
-        button { padding: 10px 20px; font-size: 1rem; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px;}
+        
+        /* ปุ่มกดสวยงาม */
+        .btn-group { margin: 15px; }
+        button { padding: 12px 25px; font-size: 1rem; cursor: pointer; border: none; border-radius: 5px; margin: 5px; color: white; font-weight: bold; }
+        .btn-start { background: #28a745; }
+        .btn-start:hover { background: #218838; }
+        .btn-stop { background: #dc3545; }
+        .btn-stop:hover { background: #c82333; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -31,14 +39,18 @@
         <br><small>(ส่งข้อมูลทุกครั้งที่ข้ามเส้น)</small>
     </div>
 
-    <button onclick="startCamera()">🔴 เริ่มกล้อง</button>
+    <div class="btn-group">
+        <button id="btnStart" class="btn-start" onclick="startCamera()">🔴 เริ่มกล้อง</button>
+        <button id="btnStop" class="btn-stop" onclick="stopCamera()" disabled>⏹ หยุด</button>
+    </div>
+
     <div class="log" id="logArea">Log การทำงาน...</div>
 
     <script>
         // --- ตั้งค่าระบบ ---
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyjbm3yoBaly8pVeXKz1QTpieUe_KjjNWpatAgq_mx3jtkX7zs6vFKm8DXzBCkxNrJm/exec"; // <--- ใส่ URL ของคุณที่นี่ !!!
-        const LINE_POSITION_PERCENT = 0.6; // เส้นอยู่ที่ 60% ของความสูงจอ (ค่อนไปทางล่าง)
-        const COOLDOWN_TIME = 2000; // ห้ามส่งข้อมูลซ้ำภายใน 2 วินาที
+        const LINE_POSITION_PERCENT = 0.6;
+        const COOLDOWN_TIME = 2000;
         
         // ตัวแปรระบบ
         let model;
@@ -47,43 +59,84 @@
         let ctx = canvas.getContext("2d");
         let lastSentTime = 0;
         let isModelLoaded = false;
+        
+        // ตัวแปรสำคัญสำหรับการหยุด
+        let isStreaming = false; 
+        let animationId = null; // เอาไว้เก็บ ID ของ Loop เพื่อสั่งยกเลิกได้แม่นยำ
 
         // โหลดโมเดล AI
         cocoSsd.load().then(loadedModel => {
             model = loadedModel;
             isModelLoaded = true;
-            document.getElementById("loading").innerText = "✅ AI พร้อมทำงาน! กดปุ่มเริ่มกล้องได้เลย";
+            document.getElementById("loading").innerText = "✅ AI พร้อมทำงาน!";
             log("AI Loaded success.");
         });
 
         async function startCamera() {
             if (!isModelLoaded) { alert("รอ AI โหลดเสร็จก่อนครับ"); return; }
-            
-            // ขออนุญาตใช้กล้อง
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                video: { facingMode: 'environment' }, // ใช้กล้องหลัง
-                audio: false 
-            });
-            video.srcObject = stream;
-            
-            video.onloadedmetadata = () => {
-                video.play();
-                // ตั้งขนาด Canvas ให้เท่ากับวิดีโอ
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                detectFrame(); // เริ่มลูปตรวจจับ
-            };
+            if (isStreaming) return; // ถ้าทำงานอยู่แล้ว ห้ามกดซ้ำ
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' },
+                    audio: false 
+                });
+                video.srcObject = stream;
+                
+                video.onloadedmetadata = () => {
+                    video.play();
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    
+                    // ตั้งค่าสถานะ
+                    isStreaming = true;
+                    toggleButtons(true); // ปรับปุ่ม
+                    detectFrame(); // เริ่มลูป
+                    log("เริ่มการทำงานกล้อง");
+                };
+            } catch (err) {
+                alert("ไม่สามารถเปิดกล้องได้: " + err);
+            }
+        }
+
+        function stopCamera() {
+            if (!isStreaming) return;
+
+            // 1. หยุด Loop การคำนวณ
+            isStreaming = false;
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+
+            // 2. สั่งปิด Hardware กล้อง (ไฟสีเขียวดับ)
+            const stream = video.srcObject;
+            if (stream) {
+                const tracks = stream.getTracks();
+                tracks.forEach(track => track.stop());
+                video.srcObject = null;
+            }
+
+            // 3. ล้างหน้าจอ Canvas ให้ดำ
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "black";
+            ctx.fillRect(0,0, canvas.width, canvas.height);
+            ctx.fillStyle = "white";
+            ctx.font = "20px Arial";
+            ctx.fillText("หยุดการทำงานแล้ว", 20, 50);
+
+            toggleButtons(false); // ปรับปุ่มคืน
+            log("หยุดการทำงานแล้ว");
         }
 
         async function detectFrame() {
-            // ตรวจจับวัตถุ
+            // เช็คก่อนเลยว่าถ้าสั่งหยุดแล้ว ให้เลิกทำทันที
+            if (!isStreaming) return;
+
             const predictions = await model.detect(video);
             
-            // ล้างหน้าจอเพื่อวาดใหม่
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // วาดเส้น Line Crossing (เส้นสีแดง)
             const lineY = canvas.height * LINE_POSITION_PERCENT;
             ctx.beginPath();
             ctx.moveTo(0, lineY);
@@ -92,41 +145,28 @@
             ctx.lineWidth = 4;
             ctx.stroke();
 
-            // วาดกรอบและคำนวณ
-            let peopleCount = 0;
-            let crossCount = 0;
-
             predictions.forEach(prediction => {
                 if (prediction.class === 'person') {
-                    peopleCount++;
-                    
-                    // ดึงพิกัด
                     const [x, y, width, height] = prediction.bbox;
                     const centerX = x + (width / 2);
                     const centerY = y + (height / 2);
-                    const bottomY = y + height; // จุดเท้า
 
-                    // วาดกรอบคน
                     ctx.strokeStyle = "#00FFFF";
                     ctx.lineWidth = 2;
                     ctx.strokeRect(x, y, width, height);
 
-                    // วาดจุดกึ่งกลาง
                     ctx.fillStyle = "yellow";
                     ctx.beginPath();
                     ctx.arc(centerX, centerY, 5, 0, 2 * Math.PI);
                     ctx.fill();
 
-                    // --- LOGIC การข้ามเส้นแบบง่าย (Trigger Zone) ---
-                    // ถ้าร่างกายส่วนกลาง ทับเส้นพอดี (บวกลบ 20px)
                     if (Math.abs(centerY - lineY) < 30) {
-                        ctx.strokeStyle = "lime"; // เปลี่ยนสีกรอบเมื่อชนเส้น
+                        ctx.strokeStyle = "lime";
                         ctx.strokeRect(x, y, width, height);
                         
-                        // เช็คเวลาเพื่อกันส่งซ้ำรัวๆ (Cooldown)
                         const now = Date.now();
                         if (now - lastSentTime > COOLDOWN_TIME) {
-                            sendDataToGAS(1); // ส่งค่า 1 คน
+                            sendDataToGAS(1);
                             lastSentTime = now;
                             log("🚶 ตรวจพบคนข้ามเส้น! กำลังส่งข้อมูล...");
                         }
@@ -134,25 +174,29 @@
                 }
             });
 
-            requestAnimationFrame(detectFrame); // วนลูปทำซ้ำ
+            // วนลูปและเก็บ ID ไว้เผื่อสั่งหยุด
+            animationId = requestAnimationFrame(detectFrame);
         }
 
         function sendDataToGAS(count) {
-            // อัปเดตตัวเลขหน้าจอ
             let display = document.getElementById("countDisplay");
             display.innerText = parseInt(display.innerText) + count;
 
-            // ส่งไป GAS แบบเงียบๆ (no-cors)
             fetch(GAS_URL, {
                 method: "POST",
                 mode: "no-cors", 
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ count: count, type: "entry" })
             }).then(() => {
-                log("✅ ส่งข้อมูลสำเร็จ: " + new Date().toLocaleTimeString());
+                log("✅ ส่งข้อมูลสำเร็จ");
             }).catch(err => {
                 log("❌ Error: " + err);
             });
+        }
+
+        function toggleButtons(isRunning) {
+            document.getElementById("btnStart").disabled = isRunning;
+            document.getElementById("btnStop").disabled = !isRunning;
         }
 
         function log(msg) {
