@@ -294,16 +294,19 @@
     </header>
 
     <nav class="nav-bar">
-        <button class="nav-btn active" onclick="switchPage('dashboard')">
-            <i class="fa-solid fa-chart-line"></i> สรุปแดชบอร์ด
-        </button>
-        <button class="nav-btn" onclick="switchPage('ai-camera')">
-            <i class="fa-solid fa-video"></i> ระบบนับคน (AI)
-        </button>
-        <button class="nav-btn" onclick="switchPage('donation')">
-            <i class="fa-solid fa-hand-holding-heart"></i> ลงทะเบียนบริจาค
-        </button>
-    </nav>
+    <button class="nav-btn active" onclick="switchPage('dashboard')">
+        <i class="fa-solid fa-chart-line"></i> สรุปแดชบอร์ด
+    </button>
+    <button class="nav-btn" onclick="switchPage('ai-camera')">
+        <i class="fa-solid fa-video"></i> ระบบนับคน (AI)
+    </button>
+    <button class="nav-btn" onclick="switchPage('donation')">
+        <i class="fa-solid fa-hand-holding-heart"></i> ลงทะเบียนบริจาค
+    </button>
+    <button class="nav-btn" onclick="window.open('lucky_game.html', '_blank')">
+        <i class="fa-solid fa-gift"></i> ลุ้นรางวัล Big Win
+    </button>
+</nav>
 
     <div id="dashboard" class="content-container active">
         <div class="dashboard-header">
@@ -495,4 +498,5 @@
     </script>
 </body>
 </html>
+
 
