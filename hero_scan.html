@@ -478,10 +478,30 @@
         }
 
         function showResult() {
-            playSound('success');
-            document.getElementById('scanner-overlay').style.display = 'none';
-            document.getElementById('result-screen').style.display = 'flex';
-        }
+    playSound('success');
+    document.getElementById('scanner-overlay').style.display = 'none';
+    
+    // --- ส่วนที่เพิ่มใหม่: เปลี่ยนข้อความตามคะแนน ---
+    const resultTitle = document.querySelector('#result-screen h2');
+    const resultDesc = document.querySelector('#result-screen p');
+
+    if (currentScore >= 80) {
+        resultTitle.innerText = "สุขภาพคุณยอดเยี่ยม!";
+        resultTitle.style.color = "#2ecc71"; // สีเขียว
+        resultDesc.innerHTML = `อวัยวะของคุณแข็งแรงมาก<br>พร้อมเป็น <b style="color:var(--accent);">Super Hero ต่อลมหายใจได้ 8 ชีวิต</b>`;
+    } else if (currentScore >= 50) {
+        resultTitle.innerText = "คุณคือฮีโร่ตัวจริง!";
+        resultTitle.style.color = "#f1c40f"; // สีเหลือง
+        resultDesc.innerHTML = `แม้สุขภาพปานกลาง แต่ใจคุณยิ่งใหญ่<br>ยังสามารถ <b style="color:var(--accent);">บริจาคบางอวัยวะช่วยผู้อื่นได้</b>`;
+    } else {
+        resultTitle.innerText = "ใจคุณหล่อมาก!";
+        resultTitle.style.color = "#e74c3c"; // สีส้มแดง
+        resultDesc.innerHTML = `สุขภาพอาจต้องดูแล แต่การให้ไม่จำกัด<br>คุณยังเป็น <b style="color:var(--accent);">ความหวังของผู้ป่วยได้เสมอ</b>`;
+    }
+    // -------------------------------------------
+
+    document.getElementById('result-screen').style.display = 'flex';
+}
 
         let dataInterval;
         function startDataStream() {
