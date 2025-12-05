@@ -48,10 +48,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* เปลี่ยนเป็น flex-start เพื่อรองรับ form ยาว */
+            justify-content: flex-start;
             padding: 20px;
             box-sizing: border-box;
-            overflow-y: auto; /* ให้ scroll ได้ถ้ายาวเกิน */
+            overflow-y: auto;
         }
 
         /* HUD ELEMENTS */
@@ -159,7 +159,7 @@
         .advice-item { margin-bottom: 8px; display: flex; gap: 10px; }
         .advice-icon { color: var(--accent); width: 20px; text-align: center; }
 
-        /* SCANNER OVERLAY (From previous code) */
+        /* SCANNER OVERLAY */
         #scanner-overlay {
             position: absolute;
             top: 50%; left: 50%;
@@ -167,6 +167,7 @@
             width: 300px; height: 500px;
             display: none;
             pointer-events: none;
+            z-index: 15;
         }
         .human-silhouette {
             width: 100%; height: 100%;
@@ -331,8 +332,8 @@
     <div id="result-screen">
         <div class="hero-badge"><i class="fa-solid fa-medal"></i></div>
         <h1 style="margin:10px 0; color:var(--primary);">HERO CONFIRMED</h1>
-        <h2 style="margin:0; font-weight:400; color:white;">คุณคือฮีโร่</h2>
-        <p style="font-size:1.1rem; color:#ccc;">ร่างกายของคุณมหัศจรรย์มาก<br>สามารถ <b style="color:var(--accent);">ต่อลมหายใจได้ถึง 8 ชีวิต</b></p>
+        <h2 id="res-title" style="margin:0; font-weight:400; color:white;">คุณคือฮีโร่</h2>
+        <p id="res-desc" style="font-size:1.1rem; color:#ccc;">ร่างกายของคุณมหัศจรรย์มาก<br>สามารถ <b style="color:var(--accent);">ต่อลมหายใจได้ถึง 8 ชีวิต</b></p>
         
         <div class="qr-box">
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://onelink.to/kzd4yy" alt="Donate QR">
@@ -347,6 +348,11 @@
     </div>
 
     <script>
+        // --- 1. ประกาศตัวแปร Global ไว้บนสุด (สำคัญมาก) ---
+        let currentScore = 100;
+        let quizAnswers = { eye: null, liver: null, kidney: null, lung: null };
+        let dataInterval;
+
         // --- CAMERA SETUP ---
         async function startCamera() {
             try {
@@ -388,9 +394,6 @@
             document.querySelectorAll('.glass-card').forEach(el => el.classList.add('hidden'));
             document.getElementById(stepId).classList.remove('hidden');
         }
-
-        // Quiz State
-        let quizAnswers = { eye: null, liver: null, kidney: null, lung: null };
 
         function selectQuiz(btn, type, val) {
             playSound('click');
@@ -434,6 +437,9 @@
                 adviceHTML = `<div class="advice-item"><div class="advice-icon"><i class="fa-solid fa-check-circle"></i></div><div>เยี่ยมมาก! คุณดูแลสุขภาพได้ดีเยี่ยม</div></div>`;
             }
 
+            // บันทึกค่าลงตัวแปร Global
+            currentScore = score;
+
             document.getElementById('score-display').innerText = `Health Score: ${score}%`;
             document.getElementById('advice-content').innerHTML = adviceHTML;
             
@@ -467,7 +473,11 @@
 
             setTimeout(() => {
                 clearInterval(scanInterval);
-                clearInterval(dataInterval);
+                clearInterval(dataInterval); // หยุดตัวหนังสือวิ่ง
+                
+                // ซ่อน Matrix Text เพื่อไม่ให้รก
+                document.getElementById('data-text').style.display = 'none';
+                
                 showResult();
             }, step * 7);
         }
@@ -478,32 +488,31 @@
         }
 
         function showResult() {
-    playSound('success');
-    document.getElementById('scanner-overlay').style.display = 'none';
-    
-    // --- ส่วนที่เพิ่มใหม่: เปลี่ยนข้อความตามคะแนน ---
-    const resultTitle = document.querySelector('#result-screen h2');
-    const resultDesc = document.querySelector('#result-screen p');
+            playSound('success');
+            document.getElementById('scanner-overlay').style.display = 'none';
+            
+            // --- Update Dynamic Text ---
+            const resultTitle = document.getElementById('res-title');
+            const resultDesc = document.getElementById('res-desc');
 
-    if (currentScore >= 80) {
-        resultTitle.innerText = "สุขภาพคุณยอดเยี่ยม!";
-        resultTitle.style.color = "#2ecc71"; // สีเขียว
-        resultDesc.innerHTML = `อวัยวะของคุณแข็งแรงมาก<br>พร้อมเป็น <b style="color:var(--accent);">Super Hero ต่อลมหายใจได้ 8 ชีวิต</b>`;
-    } else if (currentScore >= 50) {
-        resultTitle.innerText = "คุณคือฮีโร่ตัวจริง!";
-        resultTitle.style.color = "#f1c40f"; // สีเหลือง
-        resultDesc.innerHTML = `แม้สุขภาพปานกลาง แต่ใจคุณยิ่งใหญ่<br>ยังสามารถ <b style="color:var(--accent);">บริจาคบางอวัยวะช่วยผู้อื่นได้</b>`;
-    } else {
-        resultTitle.innerText = "ใจคุณหล่อมาก!";
-        resultTitle.style.color = "#e74c3c"; // สีส้มแดง
-        resultDesc.innerHTML = `สุขภาพอาจต้องดูแล แต่การให้ไม่จำกัด<br>คุณยังเป็น <b style="color:var(--accent);">ความหวังของผู้ป่วยได้เสมอ</b>`;
-    }
-    // -------------------------------------------
+            if (currentScore >= 80) {
+                resultTitle.innerText = "สุขภาพคุณยอดเยี่ยม!";
+                resultTitle.style.color = "#2ecc71";
+                resultDesc.innerHTML = `อวัยวะของคุณแข็งแรงมาก<br>พร้อมเป็น <b style="color:var(--accent);">Super Hero ต่อลมหายใจได้ 8 ชีวิต</b>`;
+            } else if (currentScore >= 50) {
+                resultTitle.innerText = "คุณคือฮีโร่ตัวจริง!";
+                resultTitle.style.color = "#f1c40f";
+                resultDesc.innerHTML = `แม้สุขภาพปานกลาง แต่ใจคุณยิ่งใหญ่<br>ยังสามารถ <b style="color:var(--accent);">บริจาคบางอวัยวะช่วยผู้อื่นได้</b>`;
+            } else {
+                resultTitle.innerText = "ใจคุณหล่อมาก!";
+                resultTitle.style.color = "#e74c3c";
+                resultDesc.innerHTML = `สุขภาพอาจต้องดูแล แต่การให้ไม่จำกัด<br>คุณยังเป็น <b style="color:var(--accent);">ความหวังของผู้ป่วยได้เสมอ</b>`;
+            }
+            
+            // Show Result Screen
+            document.getElementById('result-screen').style.display = 'flex';
+        }
 
-    document.getElementById('result-screen').style.display = 'flex';
-}
-
-        let dataInterval;
         function startDataStream() {
             const el = document.getElementById('data-text');
             el.style.display = 'block';
