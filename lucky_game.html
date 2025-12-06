@@ -10,178 +10,32 @@
 
     <style>
         :root {
-            --primary: #00A69C;
-            --secondary: #00566B;
-            --accent: #F39C12;
-            --fail: #95a5a6;
-            --dark-bg: #1a1a1a;
-            --neon-glow: 0 0 10px var(--primary), 0 0 20px var(--primary);
-        }
+    --primary: #FF5252; /* แดงนีออนสว่าง */
+    --secondary: #D32F2F;
+    --accent: #FFD700; /* ทอง */
+    --fail: #7f8c8d;
+    --dark-bg: #1a0505; /* พื้นหลังดำอมแดงเข้มๆ */
+    --neon-glow: 0 0 10px var(--primary), 0 0 20px var(--primary);
+}
 
-        body {
-            font-family: 'Prompt', sans-serif;
-            background-color: var(--dark-bg);
-            background-image: radial-gradient(circle at center, #2a2a2a 0%, #000 100%);
-            color: white;
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
+body {
+    background-color: var(--dark-bg);
+    background-image: radial-gradient(circle at center, #3e0a0a 0%, #000 100%); /* ไล่เฉดแดงเข้ม */
+}
 
-        /* --- HEADER LOGOS --- */
-        .header {
-            position: absolute;
-            top: 20px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 10;
-        }
-        .logo-row {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-        .logo-img { height: 60px; object-fit: contain; }
-        .logo-circle { height: 60px; border-radius: 50%; border: 2px solid var(--primary); }
+/* กรอบหน้าจอ */
+.display-container {
+    border: 4px solid var(--primary);
+    box-shadow: 0 0 30px rgba(255, 82, 82, 0.3);
+}
 
-        .title {
-            font-size: 2.2rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            background: linear-gradient(to right, #fff, var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(0, 166, 156, 0.5);
-            margin: 0;
-        }
-        .subtitle { font-size: 1.1rem; color: #ccc; margin-top: 5px; }
+.display-text { color: var(--primary); }
 
-        /* --- DISPLAY BOX --- */
-        .display-container {
-            position: relative;
-            width: 85%;
-            max-width: 900px;
-            height: 350px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 4px solid var(--primary);
-            border-radius: 20px;
-            box-shadow: 0 0 30px rgba(0, 166, 156, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            transition: 0.5s;
-        }
-
-        .display-text {
-            font-size: 4.5rem;
-            font-weight: bold;
-            color: var(--primary);
-            text-shadow: var(--neon-glow);
-            text-align: center;
-            line-height: 1.2;
-            padding: 20px;
-            word-wrap: break-word;
-        }
-
-        .scan-line {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 5px;
-            background: rgba(0, 255, 255, 0.5);
-            opacity: 0.5;
-            animation: scan 3s linear infinite;
-        }
-        @keyframes scan { 0% {top: 0;} 100% {top: 100%;} }
-
-        @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
-        }
-        .shake-anim { animation: shake 0.5s; animation-iteration-count: 1; }
-
-        /* BUTTON */
-        .control-btn {
-            margin-top: 40px;
-            padding: 20px 60px;
-            font-size: 2rem;
-            font-family: 'Prompt', sans-serif;
-            font-weight: bold;
-            color: var(--dark-bg);
-            background: var(--accent);
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 0 20px var(--accent);
-            transition: 0.2s;
-            text-transform: uppercase;
-        }
-        .control-btn:hover { transform: scale(1.05); box-shadow: 0 0 40px var(--accent); }
-        .control-btn:disabled { background: #555; box-shadow: none; color: #888; cursor: not-allowed; }
-
-        .admin-btn {
-            position: absolute;
-            top: 20px; right: 20px;
-            background: transparent;
-            border: none;
-            color: #555;
-            font-size: 1.5rem;
-            cursor: pointer;
-            z-index: 20;
-        }
-        .admin-btn:hover { color: white; transform: rotate(90deg); transition: 0.3s;}
-
-        /* MODAL */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 600px;
-            color: #333;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        textarea {
-            width: 100%;
-            font-family: 'Prompt', sans-serif;
-            font-size: 1.1rem;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-            background: #f9f9f9;
-        }
-        .modal h3 { margin-top: 0; color: var(--secondary); border-bottom: 2px solid var(--primary); padding-bottom: 10px;}
-        .section-label { font-weight: bold; margin-top: 15px; display: block; color: var(--secondary); }
-        .btn-save { background: var(--primary); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
-        .btn-cancel { background: #ccc; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px; }
-        .hint { font-size: 0.9rem; color: #666; margin-bottom: 5px; display: block; }
-        
-        /* Stock Badge in Admin */
-        .stock-tag { background: #eee; padding: 2px 5px; border-radius: 3px; font-size: 0.8em; margin-left: 5px; }
+/* ปุ่มกด */
+.control-btn {
+    background: var(--accent); /* ปุ่มสีทอง */
+    color: #3e0a0a; /* ตัวหนังสือสีแดงเข้ม */
+}
     </style>
 </head>
 <body>
