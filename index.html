@@ -11,11 +11,11 @@
     <style>
         :root {
             /* Theme: Red Cross + Digital Health */
-            --primary-red: #D32F2F;      /* แดงหลัก (กาชาด/หัวใจ) */
-            --dark-red: #B71C1C;         /* แดงเข้ม (Header/Nav) */
-            --digital-cyan: #00838F;     /* เขียวน้ำทะเลเข้ม (สื่อถึง Digital/Tech) */
-            --accent-gold: #FFC107;      /* สีทอง (ความหวัง/รางวัล) */
-            --bg-light: #F9FAFB;         /* พื้นหลังขาวเทา (สะอาดตาแบบการแพทย์) */
+            --primary-red: #D32F2F;
+            --dark-red: #B71C1C;
+            --digital-cyan: #00838F;
+            --accent-gold: #FFC107;
+            --bg-light: #F9FAFB;
             --text-dark: #2C3E50;
             --text-grey: #636E72;
             --white: #FFFFFF;
@@ -23,37 +23,47 @@
 
         body {
             font-family: 'Prompt', sans-serif;
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             background-color: var(--bg-light);
             color: var(--text-dark);
-            display: flex;
-            flex-direction: column;
+            display: flex; flex-direction: column;
             min-height: 100vh;
         }
 
-        /* --- 1. HEADER (Clean White with Red Accents) --- */
+        /* --- HEADER --- */
         header {
-            background: var(--white);
-            padding: 10px 20px;
+            background: var(--white); padding: 10px 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 4px solid var(--primary-red);
-            z-index: 10;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 4px solid var(--primary-red); z-index: 20;
+            position: sticky; top: 0; /* Sticky Header */
         }
         
         .logo-group-left { display: flex; align-items: center; gap: 12px; }
-        .logo-img { height: 55px; object-fit: contain; }
-
+        .logo-img { height: 50px; object-fit: contain; }
         .header-center { text-align: center; flex-grow: 1; }
-        .header-title { font-size: 1.4rem; font-weight: 700; color: var(--primary-red); margin: 0; line-height: 1.2; text-transform: uppercase; }
-        .header-subtitle { font-size: 1.1rem; color: var(--digital-cyan); margin: 0; font-weight: 500; }
+        .header-title { font-size: 1.2rem; font-weight: 700; color: var(--primary-red); margin: 0; text-transform: uppercase; }
+        .header-subtitle { font-size: 0.9rem; color: var(--digital-cyan); margin: 0; font-weight: 500; }
+        .logo-group-right img { height: 55px; border-radius: 50%; border: 2px solid var(--primary-red); }
 
-        .logo-group-right img { height: 60px; border-radius: 50%; border: 2px solid var(--primary-red); }
+        /* --- MOBILE TOGGLE BUTTON (Hidden on Desktop) --- */
+        .mobile-menu-btn {
+            display: none; /* ซ่อนในจอใหญ่ */
+            width: 100%;
+            background: var(--dark-red);
+            color: white;
+            border: none;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Prompt', sans-serif;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .mobile-menu-btn i { margin-right: 10px; }
 
-        /* --- 2. NAVIGATION (Deep Red Bar) --- */
+        /* --- NAVIGATION --- */
         .nav-bar {
             background: var(--dark-red);
             display: flex;
@@ -61,143 +71,130 @@
             padding: 12px;
             gap: 15px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            z-index: 10;
+            z-index: 15;
+            transition: all 0.3s ease-in-out;
         }
 
         .nav-btn {
             background: rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.8);
+            color: rgba(255,255,255,0.9);
             border: 1px solid rgba(255,255,255,0.1);
-            padding: 10px 25px;
+            padding: 10px 20px;
             border-radius: 50px;
             font-family: 'Prompt', sans-serif;
-            font-size: 1rem;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            transition: all 0.2s ease;
+            display: flex; align-items: center; gap: 8px;
+            white-space: nowrap;
         }
         .nav-btn:hover, .nav-btn.active {
-            background: var(--white);
-            color: var(--primary-red);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            background: var(--white); color: var(--primary-red);
+            transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             font-weight: 700;
         }
 
-        /* --- 3. CONTENT AREA --- */
+        /* --- CONTENT --- */
         .content-container {
-            flex-grow: 1;
-            padding: 25px;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
-            box-sizing: border-box;
-            display: none;
-            animation: fadeIn 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            flex-grow: 1; padding: 20px; max-width: 1400px; margin: 0 auto; width: 100%; box-sizing: border-box;
+            display: none; animation: fadeIn 0.5s;
         }
         .content-container.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* DASHBOARD STYLES */
-        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        
+        /* --- DASHBOARD --- */
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 10px; }
         .refresh-btn {
-            background: var(--white); color: var(--digital-cyan); 
-            border: 2px solid var(--digital-cyan);
-            padding: 8px 20px; border-radius: 25px; cursor: pointer; 
-            font-family: 'Prompt', sans-serif; transition: 0.3s; font-weight: 600;
+            background: var(--white); color: var(--digital-cyan); border: 2px solid var(--digital-cyan);
+            padding: 8px 20px; border-radius: 25px; cursor: pointer; font-family: 'Prompt', sans-serif; transition: 0.3s; font-weight: 600;
         }
         .refresh-btn:hover { background: var(--digital-cyan); color: white; }
-        
-        .last-update { font-size: 0.95rem; color: var(--text-grey); font-weight: 500; }
-        .last-update i { color: var(--primary-red); }
-
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
-
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         .stat-card {
-            background: var(--white); border-radius: 15px; padding: 35px 25px; text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: relative; overflow: hidden; 
-            border-top: 6px solid #ccc;
-            transition: transform 0.3s;
+            background: var(--white); border-radius: 15px; padding: 30px 20px; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: relative; overflow: hidden; border-top: 6px solid #ccc;
         }
-        .stat-card:hover { transform: translateY(-5px); }
+        .stat-card.visitor { border-color: var(--digital-cyan); }
+        .stat-card.organ { border-color: var(--primary-red); }
+        .stat-card.eye { border-color: #1976D2; }
+        .stat-icon { font-size: 3rem; margin-bottom: 15px; }
+        .visitor .stat-icon { color: var(--digital-cyan); } .organ .stat-icon { color: var(--primary-red); } .eye .stat-icon { color: #1976D2; }
+        .stat-number { font-size: 4rem; font-weight: 700; margin: 10px 0; color: var(--text-dark); }
+        .stat-label { font-size: 1.1rem; color: var(--text-grey); }
 
-        /* Card Colors */
-        .stat-card.visitor { border-color: var(--digital-cyan); } /* Visitor = Digital/Tech Color */
-        .stat-card.organ { border-color: var(--primary-red); } /* Organ = Red Cross Color */
-        .stat-card.eye { border-color: #1976D2; } /* Eye = Blue */
-
-        .stat-icon-bg { position: absolute; top: -10px; right: -20px; font-size: 9rem; opacity: 0.04; transform: rotate(-15deg); }
-        .stat-icon { font-size: 3.5rem; margin-bottom: 15px; }
-        
-        .visitor .stat-icon { color: var(--digital-cyan); }
-        .organ .stat-icon { color: var(--primary-red); }
-        .eye .stat-icon { color: #1976D2; }
-
-        .stat-number { font-size: 5rem; font-weight: 700; line-height: 1; margin: 15px 0; color: var(--text-dark); letter-spacing: -2px; }
-        .stat-label { font-size: 1.2rem; color: var(--text-grey); font-weight: 500; }
-
-        /* DONATION BUTTONS */
-        .donation-wrapper { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 40px; }
+        /* DONATION */
+        .donation-wrapper { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 30px; }
         .donate-btn {
-            width: 280px; height: 280px; border-radius: 20px; border: none; cursor: pointer;
+            width: 100%; max-width: 280px; height: 250px; border-radius: 20px; border: none; cursor: pointer;
             display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1); transition: all 0.2s; position: relative; overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); transition: transform 0.2s;
         }
-        .donate-btn:hover { transform: scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
-        .donate-btn:active { transform: scale(0.98); }
-        
-        /* Red Gradient for Organ */
+        .donate-btn:active { transform: scale(0.95); }
         .btn-organ { background: linear-gradient(135deg, #EF5350, #C62828); }
-        /* Blue Gradient for Eye */
         .btn-eye { background: linear-gradient(135deg, #4FC3F7, #0288D1); }
-        
-        .donate-btn i { font-size: 5.5rem; margin-bottom: 25px; }
-        .donate-btn span { font-size: 1.6rem; font-weight: 600; }
+        .donate-btn i { font-size: 5rem; margin-bottom: 20px; }
+        .donate-btn span { font-size: 1.5rem; font-weight: 600; }
 
-        /* --- HERO NOTIFICATION POPUP --- */
+        /* HERO POPUP */
         #hero-notification {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(183, 28, 28, 0.95); /* Red Overlay */
-            z-index: 9999;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            animation: fadeIn 0.5s;
+            background: rgba(183, 28, 28, 0.95); z-index: 9999;
+            display: none; flex-direction: column; align-items: center; justify-content: center; animation: fadeIn 0.5s;
         }
-        
-        .hero-content { text-align: center; animation: popIn 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
-        .hero-badge-icon { 
-            font-size: 7rem; color: var(--accent-gold); 
-            text-shadow: 0 0 40px var(--accent-gold);
-            margin-bottom: 20px; animation: glow 2s infinite alternate;
-        }
-        .hero-title-text { 
-            font-size: 4.5rem; font-weight: 900; color: white; margin: 0; 
-            text-transform: uppercase; letter-spacing: 2px;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        .hero-subtitle-text { 
-            font-size: 2.2rem; color: rgba(255,255,255,0.9); margin-top: 15px; font-weight: 300;
-        }
-        .hero-highlight { color: var(--accent-gold); font-weight: bold; background: rgba(0,0,0,0.2); padding: 0 10px; border-radius: 5px;}
-
-        @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        @keyframes glow { from { text-shadow: 0 0 20px var(--accent-gold); } to { text-shadow: 0 0 60px var(--accent-gold), 0 0 20px white; } }
+        .hero-content { text-align: center; width: 90%; }
+        .hero-badge-icon { font-size: 5rem; color: var(--accent-gold); animation: glow 2s infinite alternate; margin-bottom: 15px;}
+        .hero-title-text { font-size: 3rem; font-weight: 900; color: white; text-transform: uppercase; line-height: 1.1; margin-bottom: 10px;}
+        .hero-subtitle-text { font-size: 1.5rem; color: white; font-weight: 300; }
+        .hero-highlight { color: var(--accent-gold); font-weight: bold; }
+        @keyframes glow { from { text-shadow: 0 0 20px var(--accent-gold); } to { text-shadow: 0 0 50px var(--accent-gold); } }
 
         /* FOOTER */
-        footer { background: var(--dark-red); color: rgba(255,255,255,0.8); padding: 20px; margin-top: auto; }
-        .footer-content { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
-        .footer-link { display: flex; align-items: center; gap: 10px; text-decoration: none; color: white; font-size: 0.95rem; font-weight: 400; transition: 0.3s; opacity: 0.8;}
-        .footer-link i { font-size: 1.2rem; color: var(--accent-gold); }
-        .footer-link:hover { opacity: 1; transform: translateY(-2px); }
+        footer { background: var(--dark-red); color: rgba(255,255,255,0.8); padding: 20px; margin-top: auto; text-align: center;}
+        .footer-content { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .footer-link { color: white; text-decoration: none; display: flex; align-items: center; gap: 8px; }
 
-        /* Mobile */
-        @media (max-width: 768px) {
-            header { flex-direction: column; gap: 15px; }
-            .header-center { order: 2; width: 100%; }
+        /* --- RESPONSIVE MEDIA QUERIES --- */
+        @media (max-width: 1024px) {
+            /* ปรับ Header บน Tablet/Mobile */
+            header { flex-direction: column; gap: 10px; }
+            .header-center { width: 100%; order: 2; margin-bottom: 5px; }
             .logo-group-left { order: 1; }
             .logo-group-right { order: 3; }
+            
+            /* แสดงปุ่ม Toggle Menu */
+            .mobile-menu-btn { display: block; }
+
+            /* ซ่อนเมนูบาร์ปกติ แล้วทำให้เป็น Dropdown */
+            .nav-bar {
+                display: none; /* ซ่อนก่อน */
+                flex-direction: column; /* เรียงแนวตั้ง */
+                width: 100%;
+                padding: 0;
+                gap: 0;
+            }
+            
+            /* Class นี้จะถูกใส่ด้วย JS เมื่อกดปุ่ม */
+            .nav-bar.show { display: flex; }
+
+            .nav-btn {
+                border-radius: 0;
+                border: none;
+                border-bottom: 1px solid rgba(255,255,255,0.05);
+                width: 100%;
+                justify-content: flex-start; /* ชิดซ้าย */
+                padding: 15px 20px;
+                font-size: 1.1rem;
+            }
+            
+            .nav-btn:hover, .nav-btn.active {
+                transform: none; /* ไม่ต้องเด้งในมือถือ */
+                background: rgba(255,255,255,0.2);
+                color: white;
+            }
+            
+            /* ปรับขนาด Font Dashboard */
+            .stat-number { font-size: 3.5rem; }
+            .hero-title-text { font-size: 2.5rem; }
         }
     </style>
 </head>
@@ -210,41 +207,43 @@
             <img src="https://swdcph.moph.go.th/intranet/login/images/logo_swd.png" class="logo-img" alt="Hospital">
         </div>
         <div class="header-center">
-            <h1 class="header-title">Event Quick Big Win "หมอพร้อม SUPER APP"</h1>
-            <h2 class="header-subtitle">บูธกิจกรรมรณรงค์และรับบริจาคอวัยวะ</h2>
+            <h1 class="header-title">Event Quick Big Win</h1>
+            <h2 class="header-subtitle">บูธรณรงค์และรับบริจาคอวัยวะ</h2>
         </div>
         <div class="logo-group-right">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/MorProm_Logo.png/600px-MorProm_Logo.png" alt="MorProm">
         </div>
     </header>
 
-    <nav class="nav-bar">
+    <button class="mobile-menu-btn" onclick="toggleMenu()">
+        <i class="fa-solid fa-bars"></i> เมนูหลัก / เลือกกิจกรรม
+    </button>
+
+    <nav class="nav-bar" id="mainNav">
         <button class="nav-btn active" onclick="switchPage('dashboard')"><i class="fa-solid fa-chart-line"></i> สรุปแดชบอร์ด</button>
         <button class="nav-btn" onclick="switchPage('ai-camera')"><i class="fa-solid fa-video"></i> ระบบนับคน (AI)</button>
         <button class="nav-btn" onclick="switchPage('donation')"><i class="fa-solid fa-hand-holding-heart"></i> ลงทะเบียนบริจาค</button>
         <button class="nav-btn" onclick="window.open('lucky_game.html', '_blank')"><i class="fa-solid fa-gift"></i> ลุ้นรางวัล Big Win</button>
         <button class="nav-btn" onclick="window.open('hero_scan.html', '_blank')"><i class="fa-solid fa-user-astronaut"></i> Hero Scan</button>
-        <button class="nav-btn" onclick="window.open('memory_game.html', '_blank')"><i class="fa-solid fa-puzzle-piece"></i> เกมจับคู่</button>
-        <button class="nav-btn" onclick="window.open('hero_run.html', '_blank')"><i class="fa-solid fa-person-running"></i> เกม Hero Run</button>
     </nav>
 
     <div id="dashboard" class="content-container active">
         <div class="dashboard-header">
-            <div class="last-update"><i class="fa-solid fa-clock"></i> อัปเดตข้อมูลอัตโนมัติ: <span id="updateTime">-</span></div>
-            <button class="refresh-btn" onclick="fetchDataManual()"><i class="fa-solid fa-rotate-right"></i> รีเฟรชข้อมูล</button>
+            <div class="last-update"><i class="fa-solid fa-clock"></i> อัปเดต: <span id="updateTime">-</span></div>
+            <button class="refresh-btn" onclick="fetchDataManual()"><i class="fa-solid fa-rotate-right"></i> รีเฟรช</button>
         </div>
         <div class="stats-grid">
             <div class="stat-card visitor">
                 <i class="fa-solid fa-users stat-icon-bg"></i><i class="fa-solid fa-users stat-icon"></i>
-                <div class="stat-number" id="val-visitor">0</div><div class="stat-label">จำนวนผู้เข้าชมบูธ</div>
+                <div class="stat-number" id="val-visitor">0</div><div class="stat-label">ผู้เข้าชมบูธ</div>
             </div>
             <div class="stat-card organ">
                 <i class="fa-solid fa-heart-pulse stat-icon-bg"></i><i class="fa-solid fa-heart-pulse stat-icon"></i>
-                <div class="stat-number" id="val-organ">0</div><div class="stat-label">ผู้ลงทะเบียนบริจาคอวัยวะ</div>
+                <div class="stat-number" id="val-organ">0</div><div class="stat-label">บริจาคอวัยวะ</div>
             </div>
             <div class="stat-card eye">
                 <i class="fa-solid fa-eye stat-icon-bg"></i><i class="fa-solid fa-eye stat-icon"></i>
-                <div class="stat-number" id="val-eye">0</div><div class="stat-label">ผู้ลงทะเบียนบริจาคดวงตา</div>
+                <div class="stat-number" id="val-eye">0</div><div class="stat-label">บริจาคดวงตา</div>
             </div>
         </div>
     </div>
@@ -253,14 +252,13 @@
         <div style="width: 100%; height: 75vh; border-radius: 20px; overflow: hidden; border: 3px solid var(--digital-cyan); box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
             <iframe src="ai_cam.html" style="width:100%; height:100%; border:none;" allow="camera; microphone"></iframe>
         </div>
-        <p style="text-align: center; color: #777; margin-top: 10px;">*ต้องสร้างไฟล์ ai_cam.html แยกต่างหากก่อน</p>
     </div>
 
     <div id="donation" class="content-container">
-        <h2 style="text-align: center; font-size: 2rem; color: var(--primary-red);">เลือกประเภทการบริจาคเพื่อบันทึกข้อมูล</h2>
+        <h2 style="text-align: center; font-size: 1.8rem; color: var(--primary-red);">บันทึกยอดผู้บริจาค (Admin Only)</h2>
         <div class="donation-wrapper">
-            <button class="donate-btn btn-organ" onclick="sendDonation('organ')"><i class="fa-solid fa-heart-pulse"></i><span>ลงทะเบียน<br>บริจาคอวัยวะ</span></button>
-            <button class="donate-btn btn-eye" onclick="sendDonation('eye')"><i class="fa-solid fa-eye"></i><span>ลงทะเบียน<br>บริจาคดวงตา</span></button>
+            <button class="donate-btn btn-organ" onclick="sendDonation('organ')"><i class="fa-solid fa-heart-pulse"></i><span>+1 บริจาคอวัยวะ</span></button>
+            <button class="donate-btn btn-eye" onclick="sendDonation('eye')"><i class="fa-solid fa-eye"></i><span>+1 บริจาคดวงตา</span></button>
         </div>
     </div>
 
@@ -268,129 +266,94 @@
         <div class="hero-content">
             <div class="hero-badge-icon"><i class="fa-solid fa-medal"></i></div>
             <div class="hero-title-text">HERO FOUND!</div>
-            <div class="hero-subtitle-text" id="hero-msg">ขอต้อนรับ <span class="hero-highlight">ฮีโร่ผู้บริจาค</span> คนใหม่</div>
+            <div class="hero-subtitle-text" id="hero-msg">ขอต้อนรับ <span class="hero-highlight">ฮีโร่</span> คนใหม่</div>
         </div>
     </div>
 
     <footer>
         <div class="footer-content">
-            <a href="https://swdcph.moph.go.th" target="_blank" class="footer-link"><i class="fa-solid fa-globe"></i> swdcph.moph.go.th</a>
-            <a href="https://www.facebook.com/swdcph" target="_blank" class="footer-link"><i class="fa-brands fa-facebook"></i> รพ.สมเด็จพระยุพราชสว่างแดนดิน</a>
+            <a href="https://swdcph.moph.go.th" target="_blank" class="footer-link"><i class="fa-solid fa-globe"></i> Website</a>
+            <a href="https://www.facebook.com/swdcph" target="_blank" class="footer-link"><i class="fa-brands fa-facebook"></i> Facebook</a>
             <div class="footer-link"><i class="fa-solid fa-phone"></i> 042-721-111</div>
         </div>
     </footer>
 
     <script>
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyjbm3yoBaly8pVeXKz1QTpieUe_KjjNWpatAgq_mx3jtkX7zs6vFKm8DXzBCkxNrJm/exec";
-        const REFRESH_RATE = 5000; 
-
-        // ตัวแปรเก็บค่าล่าสุด
         let lastCounts = { visitor: 0, organ: 0, eye: 0 };
         let isFirstLoad = true;
 
+        // --- Toggle Menu Function ---
+        function toggleMenu() {
+            const nav = document.getElementById('mainNav');
+            nav.classList.toggle('show');
+        }
+
         function switchPage(pageId) {
+            // Close menu on mobile after click
+            document.getElementById('mainNav').classList.remove('show');
+
             document.querySelectorAll('.content-container').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             
-            const buttons = document.querySelectorAll('.nav-btn');
-            if(pageId === 'dashboard') { buttons[0].classList.add('active'); fetchDataManual(); }
-            if(pageId === 'ai-camera') buttons[1].classList.add('active');
-            if(pageId === 'donation') buttons[2].classList.add('active');
+            // Highlight Button (Need loop because duplicate buttons might exist if optimized, but here simplistic)
+            const btns = document.querySelectorAll('.nav-btn');
+            if(pageId === 'dashboard') { btns[0].classList.add('active'); fetchDataManual(); }
+            if(pageId === 'ai-camera') btns[1].classList.add('active');
+            if(pageId === 'donation') btns[2].classList.add('active');
         }
 
         async function fetchDataManual() {
-            const btn = document.querySelector('.refresh-btn i');
-            if(btn) btn.classList.add('fa-spin');
-            
             try {
                 const response = await fetch(GAS_URL);
                 const data = await response.json();
                 
-                // ตรวจสอบ HERO ใหม่
                 if (!isFirstLoad) {
-                    if (data.organ > lastCounts.organ) {
-                        triggerHeroPopup("บริจาคอวัยวะ");
-                    } else if (data.eye > lastCounts.eye) {
-                        triggerHeroPopup("บริจาคดวงตา");
-                    }
+                    if (data.organ > lastCounts.organ) triggerHeroPopup("บริจาคอวัยวะ");
+                    else if (data.eye > lastCounts.eye) triggerHeroPopup("บริจาคดวงตา");
                 }
 
-                // อัปเดตตัวเลข
                 updateStat("val-visitor", data.visitor);
                 updateStat("val-organ", data.organ);
                 updateStat("val-eye", data.eye);
 
                 lastCounts = { visitor: data.visitor, organ: data.organ, eye: data.eye };
                 isFirstLoad = false;
-
-                const now = new Date();
-                document.getElementById('updateTime').innerText = now.toLocaleTimeString('th-TH');
-            } catch (error) {
-                console.error("Error:", error);
-            } finally {
-                if(btn) btn.classList.remove('fa-spin');
-            }
+                document.getElementById('updateTime').innerText = new Date().toLocaleTimeString('th-TH');
+            } catch (error) { console.error("Error:", error); }
         }
 
-        function updateStat(id, newValue) {
+        function updateStat(id, val) {
             const el = document.getElementById(id);
-            if (parseInt(el.innerText) !== newValue) {
-                el.innerText = newValue;
-                el.style.transform = "scale(1.2)";
-                el.style.color = "#D32F2F"; // Highlight เป็นสีแดง
+            if (parseInt(el.innerText) !== val) {
+                el.innerText = val; el.style.transform = "scale(1.2)"; el.style.color = "#D32F2F";
                 setTimeout(() => { el.style.transform = "scale(1)"; el.style.color = "#2C3E50"; }, 300);
             }
         }
 
-        // --- HERO POPUP LOGIC ---
-        function triggerHeroPopup(typeText) {
-            document.getElementById('hero-msg').innerHTML = `ขอต้อนรับ <span class="hero-highlight">ฮีโร่ผู้${typeText}</span> คนใหม่`;
-            const popup = document.getElementById('hero-notification');
-            popup.style.display = 'flex';
-
+        function triggerHeroPopup(txt) {
+            document.getElementById('hero-msg').innerHTML = `ขอต้อนรับ <span class="hero-highlight">ฮีโร่ผู้${txt}</span> คนใหม่`;
+            document.getElementById('hero-notification').style.display = 'flex';
             playWinSound();
-
-            // พลุสี แดง ขาว ทอง
             confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#D32F2F', '#ffffff', '#FFC107'] });
-            setTimeout(() => { confetti({ particleCount: 150, spread: 120, origin: { y: 0.6 }, colors: ['#D32F2F', '#ffffff'] }); }, 500);
-
-            setTimeout(() => { popup.style.display = 'none'; }, 6000);
+            setTimeout(() => document.getElementById('hero-notification').style.display = 'none', 6000);
         }
 
-        // --- SOUND ENGINE ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playWinSound() {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const now = audioCtx.currentTime;
-            [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = i===3 ? 'square' : 'triangle';
-                osc.frequency.value = freq;
-                gain.gain.setValueAtTime(0.1, now + (i*0.15));
-                gain.gain.exponentialRampToValueAtTime(0.001, now + (i*0.15) + 0.8);
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                osc.start(now + (i*0.15)); osc.stop(now + (i*0.15) + 1);
+            [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+                const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+                o.type = i===3?'square':'triangle'; o.frequency.value = f;
+                g.gain.setValueAtTime(0.1, now+(i*0.15)); g.gain.exponentialRampToValueAtTime(0.001, now+(i*0.15)+0.8);
+                o.connect(g); g.connect(audioCtx.destination); o.start(now+(i*0.15)); o.stop(now+(i*0.15)+1);
             });
         }
 
-        // Auto Refresh
-        setInterval(() => {
-            if (document.getElementById('dashboard').classList.contains('active')) {
-                fetchDataManual();
-            }
-        }, REFRESH_RATE);
-
-        function sendDonation(type) {
-            fetch(GAS_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ type: type, count: 1 })
-            });
-        }
-
+        setInterval(() => { if (document.getElementById('dashboard').classList.contains('active')) fetchDataManual(); }, 5000);
+        function sendDonation(type) { fetch(GAS_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: type, count: 1 }) }); }
         fetchDataManual();
     </script>
 </body>
