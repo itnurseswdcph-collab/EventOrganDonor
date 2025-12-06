@@ -84,7 +84,113 @@
             margin-top: 5px;
             border-radius: 5px;
         }
-    </style>
+        
+         /* --- Header & Navbar --- */
+        .top-header { background: white; padding: 15px 0; border-bottom: 1px solid #ddd; z-index: 10; }
+        .logo-img { height: 60px; width: auto; object-fit: contain; margin-right: 10px; transition: transform 0.2s; }
+        .logo-img:hover { transform: scale(1.05); }
+        .header-title { color: #b00d23; font-weight: 700; text-transform: uppercase; text-align: center; margin: 0; line-height: 1.2; }
+        .header-subtitle { color: #008080; text-align: center; font-size: 0.9rem; margin-top: 5px; }
+
+        .main-navbar { background-color: #b00d23; padding: 15px 0; white-space: nowrap; overflow-x: auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); z-index: 9; }
+        .nav-container { display: flex; justify-content: center; gap: 10px; min-width: max-content; padding: 0 15px; }
+        .nav-btn { background: rgba(255,255,255,0.15); color: white !important; border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 10px 25px; transition: all 0.3s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; }
+        .nav-btn:hover, .nav-btn.active { background: white; color: #b00d23 !important; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+        /* --- Stat Cards --- */
+        .stat-card { background: white; border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: relative; overflow: hidden; height: 100%; transition: transform 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); }
+        
+        .border-top-teal { border-top: 6px solid #20c997; }
+        .border-top-red { border-top: 6px solid #dc3545; }
+        .border-top-blue { border-top: 6px solid #0d6efd; }
+
+        .main-icon { font-size: 3.5rem; margin-bottom: 20px; }
+        .icon-teal { color: #20c997; }
+        .icon-red { color: #dc3545; }
+        .icon-blue { color: #0d6efd; }
+
+        .odometer { font-size: 4.5rem; font-weight: 800; color: #333; line-height: 1; }
+        .watermark-icon { position: absolute; bottom: -20px; right: 10px; font-size: 10rem; opacity: 0.08; color: #000; z-index: 0; pointer-events: none; transform: rotate(-15deg); }
+        .card-content { position: relative; z-index: 2; padding: 40px 20px; text-align: center; }
+
+        /* --- Footer --- */
+        .custom-footer { margin-top: auto; background-color: #b00d23; color: white; padding: 30px 0 15px 0; font-size: 0.9rem; }
+        .footer-link { color: white; text-decoration: none; transition: opacity 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .footer-link:hover { opacity: 0.8; color: #ffd700; }
+        .footer-divider { margin: 0 10px; opacity: 0.5; }
+        .copyright-text { border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; margin-top: 20px; font-size: 0.8rem; opacity: 0.9; }
+
+        /* --- HERO FOUND POPUP (แจ้งเตือนผู้บริจาคใหม่) --- */
+        .found-modal {
+            display: none; /* ซ่อนไว้ก่อน */
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.95); /* พื้นหลังดำโปร่งแสง */
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .found-icon-container { position: relative; margin-bottom: 20px; }
+
+        /* ไอคอนเหรียญทอง */
+        .found-medal {
+            font-size: 12rem;
+            color: #ffd700;
+            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8));
+            animation: pulse 1s infinite; /* เต้นตุบๆ */
+        }
+
+        .found-title {
+            color: #ff6b6b;
+            font-size: 6rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin: 0;
+            text-shadow: 0 0 30px rgba(255, 107, 107, 0.8);
+            animation: rubberBand 1s; /* เด้งดึ๋ง */
+        }
+
+        .found-subtitle {
+            font-size: 2.5rem;
+            color: #20c997;
+            font-weight: bold;
+            margin-top: 10px;
+            text-shadow: 0 0 10px rgba(32, 201, 151, 0.5);
+        }
+        
+        .found-desc {
+            color: white;
+            font-size: 1.5rem;
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+
+        .dismiss-btn {
+            margin-top: 40px;
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 40px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .dismiss-btn:hover { background: white; color: black; }
+
+        /* ปุ่มเปิดเสียง (เผื่อ Browser บล็อกเสียงอัตโนมัติ) */
+        .sound-toggle {
+            position: fixed; bottom: 20px; right: 20px; 
+            background: rgba(0,0,0,0.5); color: white; 
+            border: none; border-radius: 50%; width: 50px; height: 50px;
+            z-index: 100; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        </style>
 </head>
 <body>
     <!-- Header -->
