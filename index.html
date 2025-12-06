@@ -10,11 +10,14 @@
     
     <style>
         :root {
-            --primary-green: #00A69C; 
-            --dark-green: #00566B;
-            --accent-gold: #F39C12;
-            --bg-light: #F0F4F8;
-            --text-dark: #333333;
+            /* Theme: Red Cross + Digital Health */
+            --primary-red: #D32F2F;      /* แดงหลัก (กาชาด/หัวใจ) */
+            --dark-red: #B71C1C;         /* แดงเข้ม (Header/Nav) */
+            --digital-cyan: #00838F;     /* เขียวน้ำทะเลเข้ม (สื่อถึง Digital/Tech) */
+            --accent-gold: #FFC107;      /* สีทอง (ความหวัง/รางวัล) */
+            --bg-light: #F9FAFB;         /* พื้นหลังขาวเทา (สะอาดตาแบบการแพทย์) */
+            --text-dark: #2C3E50;
+            --text-grey: #636E72;
             --white: #FFFFFF;
         }
 
@@ -29,15 +32,15 @@
             min-height: 100vh;
         }
 
-        /* --- 1. HEADER --- */
+        /* --- 1. HEADER (Clean White with Red Accents) --- */
         header {
             background: var(--white);
             padding: 10px 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 4px solid var(--primary-green);
+            border-bottom: 4px solid var(--primary-red);
             z-index: 10;
         }
         
@@ -45,28 +48,28 @@
         .logo-img { height: 55px; object-fit: contain; }
 
         .header-center { text-align: center; flex-grow: 1; }
-        .header-title { font-size: 1.4rem; font-weight: 700; color: var(--dark-green); margin: 0; line-height: 1.2; }
-        .header-subtitle { font-size: 1.1rem; color: var(--primary-green); margin: 0; font-weight: 500; }
+        .header-title { font-size: 1.4rem; font-weight: 700; color: var(--primary-red); margin: 0; line-height: 1.2; text-transform: uppercase; }
+        .header-subtitle { font-size: 1.1rem; color: var(--digital-cyan); margin: 0; font-weight: 500; }
 
-        .logo-group-right img { height: 60px; border-radius: 50%; border: 2px solid var(--primary-green); }
+        .logo-group-right img { height: 60px; border-radius: 50%; border: 2px solid var(--primary-red); }
 
-        /* --- 2. NAVIGATION --- */
+        /* --- 2. NAVIGATION (Deep Red Bar) --- */
         .nav-bar {
-            background: var(--dark-green);
+            background: var(--dark-red);
             display: flex;
             justify-content: center;
-            padding: 10px;
+            padding: 12px;
             gap: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             z-index: 10;
         }
 
         .nav-btn {
-            background: rgba(255,255,255,0.15);
-            color: var(--white);
-            border: none;
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8);
+            border: 1px solid rgba(255,255,255,0.1);
             padding: 10px 25px;
-            border-radius: 30px;
+            border-radius: 50px;
             font-family: 'Prompt', sans-serif;
             font-size: 1rem;
             cursor: pointer;
@@ -76,100 +79,118 @@
             gap: 8px;
         }
         .nav-btn:hover, .nav-btn.active {
-            background: var(--accent-gold);
+            background: var(--white);
+            color: var(--primary-red);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-weight: 700;
         }
 
         /* --- 3. CONTENT AREA --- */
         .content-container {
             flex-grow: 1;
-            padding: 20px;
+            padding: 25px;
             max-width: 1400px;
             margin: 0 auto;
             width: 100%;
             box-sizing: border-box;
             display: none;
-            animation: fadeIn 0.4s ease-in-out;
+            animation: fadeIn 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
         .content-container.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         /* DASHBOARD STYLES */
-        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        
         .refresh-btn {
-            background: var(--white); color: var(--primary-green); border: 2px solid var(--primary-green);
-            padding: 8px 15px; border-radius: 20px; cursor: pointer; font-family: 'Prompt', sans-serif; transition: 0.3s;
+            background: var(--white); color: var(--digital-cyan); 
+            border: 2px solid var(--digital-cyan);
+            padding: 8px 20px; border-radius: 25px; cursor: pointer; 
+            font-family: 'Prompt', sans-serif; transition: 0.3s; font-weight: 600;
         }
-        .refresh-btn:hover { background: var(--primary-green); color: white; }
-        .last-update { font-size: 0.9rem; color: #666; }
+        .refresh-btn:hover { background: var(--digital-cyan); color: white; }
+        
+        .last-update { font-size: 0.95rem; color: var(--text-grey); font-weight: 500; }
+        .last-update i { color: var(--primary-red); }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
 
         .stat-card {
-            background: var(--white); border-radius: 20px; padding: 30px 20px; text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05); position: relative; overflow: hidden; border-bottom: 6px solid #ccc;
+            background: var(--white); border-radius: 15px; padding: 35px 25px; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: relative; overflow: hidden; 
+            border-top: 6px solid #ccc;
+            transition: transform 0.3s;
         }
-        .stat-card.visitor { border-color: var(--primary-green); }
-        .stat-card.organ { border-color: #E74C3C; }
-        .stat-card.eye { border-color: #3498DB; }
+        .stat-card:hover { transform: translateY(-5px); }
 
-        .stat-icon-bg { position: absolute; top: -20px; right: -20px; font-size: 8rem; opacity: 0.05; }
+        /* Card Colors */
+        .stat-card.visitor { border-color: var(--digital-cyan); } /* Visitor = Digital/Tech Color */
+        .stat-card.organ { border-color: var(--primary-red); } /* Organ = Red Cross Color */
+        .stat-card.eye { border-color: #1976D2; } /* Eye = Blue */
+
+        .stat-icon-bg { position: absolute; top: -10px; right: -20px; font-size: 9rem; opacity: 0.04; transform: rotate(-15deg); }
         .stat-icon { font-size: 3.5rem; margin-bottom: 15px; }
-        .visitor .stat-icon { color: var(--primary-green); }
-        .organ .stat-icon { color: #E74C3C; }
-        .eye .stat-icon { color: #3498DB; }
+        
+        .visitor .stat-icon { color: var(--digital-cyan); }
+        .organ .stat-icon { color: var(--primary-red); }
+        .eye .stat-icon { color: #1976D2; }
 
-        .stat-number { font-size: 4.5rem; font-weight: 700; line-height: 1; margin: 10px 0; color: var(--text-dark); }
-        .stat-label { font-size: 1.3rem; color: #777; font-weight: 500;}
+        .stat-number { font-size: 5rem; font-weight: 700; line-height: 1; margin: 15px 0; color: var(--text-dark); letter-spacing: -2px; }
+        .stat-label { font-size: 1.2rem; color: var(--text-grey); font-weight: 500; }
 
         /* DONATION BUTTONS */
         .donation-wrapper { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 40px; }
         .donate-btn {
-            width: 300px; height: 300px; border-radius: 25px; border: none; cursor: pointer;
+            width: 280px; height: 280px; border-radius: 20px; border: none; cursor: pointer;
             display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15); transition: transform 0.2s; position: relative; overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); transition: all 0.2s; position: relative; overflow: hidden;
         }
-        .donate-btn:active { transform: scale(0.95); }
-        .btn-organ { background: linear-gradient(135deg, #FF7675, #D63031); }
-        .btn-eye { background: linear-gradient(135deg, #74B9FF, #0984E3); }
-        .donate-btn i { font-size: 6rem; margin-bottom: 25px; }
-        .donate-btn span { font-size: 1.8rem; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .donate-btn:hover { transform: scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+        .donate-btn:active { transform: scale(0.98); }
+        
+        /* Red Gradient for Organ */
+        .btn-organ { background: linear-gradient(135deg, #EF5350, #C62828); }
+        /* Blue Gradient for Eye */
+        .btn-eye { background: linear-gradient(135deg, #4FC3F7, #0288D1); }
+        
+        .donate-btn i { font-size: 5.5rem; margin-bottom: 25px; }
+        .donate-btn span { font-size: 1.6rem; font-weight: 600; }
 
         /* --- HERO NOTIFICATION POPUP --- */
         #hero-notification {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 9999;
+            background: rgba(183, 28, 28, 0.95); /* Red Overlay */
+            z-index: 9999;
             display: none; flex-direction: column; align-items: center; justify-content: center;
             animation: fadeIn 0.5s;
         }
         
         .hero-content { text-align: center; animation: popIn 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
         .hero-badge-icon { 
-            font-size: 6rem; color: var(--accent-gold); 
-            text-shadow: 0 0 50px var(--accent-gold);
+            font-size: 7rem; color: var(--accent-gold); 
+            text-shadow: 0 0 40px var(--accent-gold);
             margin-bottom: 20px; animation: glow 2s infinite alternate;
         }
         .hero-title-text { 
-            font-size: 4rem; font-weight: 900; color: var(--primary-green); margin: 0; 
+            font-size: 4.5rem; font-weight: 900; color: white; margin: 0; 
             text-transform: uppercase; letter-spacing: 2px;
-            text-shadow: 0 0 20px rgba(0, 166, 156, 0.5);
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         .hero-subtitle-text { 
-            font-size: 2rem; color: white; margin-top: 10px; font-weight: 300;
+            font-size: 2.2rem; color: rgba(255,255,255,0.9); margin-top: 15px; font-weight: 300;
         }
-        .hero-highlight { color: var(--accent-gold); font-weight: bold; }
+        .hero-highlight { color: var(--accent-gold); font-weight: bold; background: rgba(0,0,0,0.2); padding: 0 10px; border-radius: 5px;}
 
         @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        @keyframes glow { from { text-shadow: 0 0 20px var(--accent-gold); } to { text-shadow: 0 0 60px var(--accent-gold), 0 0 10px white; } }
+        @keyframes glow { from { text-shadow: 0 0 20px var(--accent-gold); } to { text-shadow: 0 0 60px var(--accent-gold), 0 0 20px white; } }
 
         /* FOOTER */
-        footer { background: var(--white); padding: 15px; border-top: 1px solid #ddd; margin-top: auto; }
+        footer { background: var(--dark-red); color: rgba(255,255,255,0.8); padding: 20px; margin-top: auto; }
         .footer-content { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
-        .footer-link { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #555; font-size: 1rem; font-weight: 500; transition: 0.3s; }
-        .footer-link i { font-size: 1.3rem; color: var(--primary-green); }
-        .footer-link:hover { color: var(--dark-green); }
+        .footer-link { display: flex; align-items: center; gap: 10px; text-decoration: none; color: white; font-size: 0.95rem; font-weight: 400; transition: 0.3s; opacity: 0.8;}
+        .footer-link i { font-size: 1.2rem; color: var(--accent-gold); }
+        .footer-link:hover { opacity: 1; transform: translateY(-2px); }
 
         /* Mobile */
         @media (max-width: 768px) {
@@ -229,14 +250,14 @@
     </div>
 
     <div id="ai-camera" class="content-container">
-        <div style="width: 100%; height: 75vh; border-radius: 20px; overflow: hidden; border: 3px solid var(--dark-green); box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+        <div style="width: 100%; height: 75vh; border-radius: 20px; overflow: hidden; border: 3px solid var(--digital-cyan); box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
             <iframe src="ai_cam.html" style="width:100%; height:100%; border:none;" allow="camera; microphone"></iframe>
         </div>
         <p style="text-align: center; color: #777; margin-top: 10px;">*ต้องสร้างไฟล์ ai_cam.html แยกต่างหากก่อน</p>
     </div>
 
     <div id="donation" class="content-container">
-        <h2 style="text-align: center; font-size: 2rem; color: var(--dark-green);">เลือกประเภทการบริจาคเพื่อบันทึกข้อมูล</h2>
+        <h2 style="text-align: center; font-size: 2rem; color: var(--primary-red);">เลือกประเภทการบริจาคเพื่อบันทึกข้อมูล</h2>
         <div class="donation-wrapper">
             <button class="donate-btn btn-organ" onclick="sendDonation('organ')"><i class="fa-solid fa-heart-pulse"></i><span>ลงทะเบียน<br>บริจาคอวัยวะ</span></button>
             <button class="donate-btn btn-eye" onclick="sendDonation('eye')"><i class="fa-solid fa-eye"></i><span>ลงทะเบียน<br>บริจาคดวงตา</span></button>
@@ -263,9 +284,9 @@
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyjbm3yoBaly8pVeXKz1QTpieUe_KjjNWpatAgq_mx3jtkX7zs6vFKm8DXzBCkxNrJm/exec";
         const REFRESH_RATE = 5000; 
 
-        // ตัวแปรเก็บค่าล่าสุด เพื่อเปรียบเทียบหา New Hero
+        // ตัวแปรเก็บค่าล่าสุด
         let lastCounts = { visitor: 0, organ: 0, eye: 0 };
-        let isFirstLoad = true; // โหลดครั้งแรกจะไม่เด้ง
+        let isFirstLoad = true;
 
         function switchPage(pageId) {
             document.querySelectorAll('.content-container').forEach(el => el.classList.remove('active'));
@@ -286,7 +307,7 @@
                 const response = await fetch(GAS_URL);
                 const data = await response.json();
                 
-                // ตรวจสอบ HERO ใหม่ (เฉพาะ Organ และ Eye)
+                // ตรวจสอบ HERO ใหม่
                 if (!isFirstLoad) {
                     if (data.organ > lastCounts.organ) {
                         triggerHeroPopup("บริจาคอวัยวะ");
@@ -300,7 +321,6 @@
                 updateStat("val-organ", data.organ);
                 updateStat("val-eye", data.eye);
 
-                // บันทึกค่าล่าสุด
                 lastCounts = { visitor: data.visitor, organ: data.organ, eye: data.eye };
                 isFirstLoad = false;
 
@@ -318,35 +338,24 @@
             if (parseInt(el.innerText) !== newValue) {
                 el.innerText = newValue;
                 el.style.transform = "scale(1.2)";
-                el.style.color = "#F39C12";
-                setTimeout(() => { el.style.transform = "scale(1)"; el.style.color = "#333"; }, 300);
+                el.style.color = "#D32F2F"; // Highlight เป็นสีแดง
+                setTimeout(() => { el.style.transform = "scale(1)"; el.style.color = "#2C3E50"; }, 300);
             }
         }
 
         // --- HERO POPUP LOGIC ---
         function triggerHeroPopup(typeText) {
-            // 1. ตั้งข้อความ
             document.getElementById('hero-msg').innerHTML = `ขอต้อนรับ <span class="hero-highlight">ฮีโร่ผู้${typeText}</span> คนใหม่`;
-            
-            // 2. แสดง Popup
             const popup = document.getElementById('hero-notification');
             popup.style.display = 'flex';
 
-            // 3. เล่นเสียง
             playWinSound();
 
-            // 4. ยิงพลุ
-            confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#F39C12', '#ffffff', '#00A69C'] });
-            
-            // ยิงซ้ำอีกรอบ
-            setTimeout(() => {
-                confetti({ particleCount: 150, spread: 120, origin: { y: 0.6 } });
-            }, 500);
+            // พลุสี แดง ขาว ทอง
+            confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#D32F2F', '#ffffff', '#FFC107'] });
+            setTimeout(() => { confetti({ particleCount: 150, spread: 120, origin: { y: 0.6 }, colors: ['#D32F2F', '#ffffff'] }); }, 500);
 
-            // 5. ปิดอัตโนมัติเมื่อผ่านไป 6 วินาที
-            setTimeout(() => {
-                popup.style.display = 'none';
-            }, 6000);
+            setTimeout(() => { popup.style.display = 'none'; }, 6000);
         }
 
         // --- SOUND ENGINE ---
@@ -354,7 +363,6 @@
         function playWinSound() {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const now = audioCtx.currentTime;
-            // Fanfare Melody: C - E - G - High C
             [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
@@ -367,7 +375,7 @@
             });
         }
 
-        // Auto Refresh Loop
+        // Auto Refresh
         setInterval(() => {
             if (document.getElementById('dashboard').classList.contains('active')) {
                 fetchDataManual();
@@ -380,14 +388,9 @@
                 mode: "no-cors",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ type: type, count: 1 })
-            }).then(() => {
-                // Dashboard จะเด้งเองเพราะ Auto Refresh จะจับค่าที่เปลี่ยนไปได้
-                // แต่ถ้าอยากให้เด้งทันทีที่กดในหน้า Donation (optional):
-                // triggerHeroPopup(type === 'organ' ? 'บริจาคอวัยวะ' : 'บริจาคดวงตา'); 
             });
         }
 
-        // Init
         fetchDataManual();
     </script>
 </body>
