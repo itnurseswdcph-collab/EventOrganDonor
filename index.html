@@ -4,357 +4,231 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Quick Big Win Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
-    <style>
-        :root {
-            /* Theme: Red Cross + Digital Health */
-            --primary-red: #D32F2F;
-            --dark-red: #B71C1C;
-            --digital-cyan: #00838F;
-            --accent-gold: #FFC107;
-            --bg-light: #F9FAFB;
-            --text-dark: #2C3E50;
-            --text-grey: #636E72;
-            --white: #FFFFFF;
-        }
 
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.7/themes/odometer-theme-default.min.css" />
+
+    <style>
         body {
             font-family: 'Prompt', sans-serif;
-            margin: 0; padding: 0;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            display: flex; flex-direction: column;
-            min-height: 100vh;
+            background-color: #f4f6f9;
         }
 
-        /* --- HEADER --- */
-        header {
-            background: var(--white); padding: 10px 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 4px solid var(--primary-red); z-index: 20;
-            position: sticky; top: 0; /* Sticky Header */
+        /* ส่วน Header สีขาว */
+        .top-header {
+            background: white;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
         }
         
-        .logo-group-left { display: flex; align-items: center; gap: 12px; }
-        .logo-img { height: 50px; object-fit: contain; }
-        .header-center { text-align: center; flex-grow: 1; }
-        .header-title { font-size: 1.2rem; font-weight: 700; color: var(--primary-red); margin: 0; text-transform: uppercase; }
-        .header-subtitle { font-size: 0.9rem; color: var(--digital-cyan); margin: 0; font-weight: 500; }
-        .logo-group-right img { height: 55px; border-radius: 50%; border: 2px solid var(--primary-red); }
+        .header-title {
+            color: #b00d23; /* สีแดงเลือดหมูตามภาพ */
+            font-weight: 700;
+            text-transform: uppercase;
+            text-align: center;
+        }
+        .header-subtitle {
+            color: #008080; /* สีเขียวอมฟ้า */
+            text-align: center;
+            font-size: 0.9rem;
+        }
 
-        /* --- MOBILE TOGGLE BUTTON (Hidden on Desktop) --- */
-        .mobile-menu-btn {
-            display: none; /* ซ่อนในจอใหญ่ */
-            width: 100%;
-            background: var(--dark-red);
+        /* ส่วน Navbar สีแดง */
+        .main-navbar {
+            background-color: #b00d23;
+            padding: 15px 0;
+        }
+        .nav-btn {
+            background: rgba(255,255,255,0.15);
             color: white;
             border: none;
-            padding: 15px;
-            text-align: center;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            font-family: 'Prompt', sans-serif;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .mobile-menu-btn i { margin-right: 10px; }
-
-        /* --- NAVIGATION --- */
-        .nav-bar {
-            background: var(--dark-red);
-            display: flex;
-            justify-content: center;
-            padding: 12px;
-            gap: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            z-index: 15;
-            transition: all 0.3s ease-in-out;
-        }
-
-        .nav-btn {
-            background: rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.9);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 10px 20px;
             border-radius: 50px;
-            font-family: 'Prompt', sans-serif;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex; align-items: center; gap: 8px;
-            white-space: nowrap;
+            padding: 8px 20px;
+            margin: 0 5px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
         .nav-btn:hover, .nav-btn.active {
-            background: var(--white); color: var(--primary-red);
-            transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            font-weight: 700;
+            background: white;
+            color: #b00d23;
         }
 
-        /* --- CONTENT --- */
-        .content-container {
-            flex-grow: 1; padding: 20px; max-width: 1400px; margin: 0 auto; width: 100%; box-sizing: border-box;
-            display: none; animation: fadeIn 0.5s;
-        }
-        .content-container.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- DASHBOARD --- */
-        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 10px; }
-        .refresh-btn {
-            background: var(--white); color: var(--digital-cyan); border: 2px solid var(--digital-cyan);
-            padding: 8px 20px; border-radius: 25px; cursor: pointer; font-family: 'Prompt', sans-serif; transition: 0.3s; font-weight: 600;
-        }
-        .refresh-btn:hover { background: var(--digital-cyan); color: white; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        /* --- CSS สำคัญ: การ์ดและลายน้ำ --- */
         .stat-card {
-            background: var(--white); border-radius: 15px; padding: 30px 20px; text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: relative; overflow: hidden; border-top: 6px solid #ccc;
+            background: white;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            position: relative; /* สำคัญ: เพื่อให้ลายน้ำอ้างอิงตำแหน่งจากกรอบนี้ */
+            overflow: hidden;   /* สำคัญ: ตัดส่วนลายน้ำที่เกินออก */
+            height: 100%;
+            transition: transform 0.3s;
         }
-        .stat-card.visitor { border-color: var(--digital-cyan); }
-        .stat-card.organ { border-color: var(--primary-red); }
-        .stat-card.eye { border-color: #1976D2; }
-        .stat-icon { font-size: 3rem; margin-bottom: 15px; }
-        .visitor .stat-icon { color: var(--digital-cyan); } .organ .stat-icon { color: var(--primary-red); } .eye .stat-icon { color: #1976D2; }
-        .stat-number { font-size: 4rem; font-weight: 700; margin: 10px 0; color: var(--text-dark); }
-        .stat-label { font-size: 1.1rem; color: var(--text-grey); }
+        
+        /* แถบสีด้านบนการ์ดแต่ละใบ */
+        .border-top-teal { border-top: 5px solid #20c997; }
+        .border-top-red { border-top: 5px solid #dc3545; }
+        .border-top-blue { border-top: 5px solid #0d6efd; }
 
-        /* DONATION */
-        .donation-wrapper { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 30px; }
-        .donate-btn {
-            width: 100%; max-width: 280px; height: 250px; border-radius: 20px; border: none; cursor: pointer;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); transition: transform 0.2s;
+        /* ไอคอนหลัก (ตัวเล็กตรงกลาง) */
+        .main-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
         }
-        .donate-btn:active { transform: scale(0.95); }
-        .btn-organ { background: linear-gradient(135deg, #EF5350, #C62828); }
-        .btn-eye { background: linear-gradient(135deg, #4FC3F7, #0288D1); }
-        .donate-btn i { font-size: 5rem; margin-bottom: 20px; }
-        .donate-btn span { font-size: 1.5rem; font-weight: 600; }
+        .icon-teal { color: #20c997; }
+        .icon-red { color: #dc3545; }
+        .icon-blue { color: #0d6efd; }
 
-        /* HERO POPUP */
-        #hero-notification {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(183, 28, 28, 0.95); z-index: 9999;
-            display: none; flex-direction: column; align-items: center; justify-content: center; animation: fadeIn 0.5s;
+        /* ตัวเลข Odometer */
+        .odometer {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #333;
         }
-        .hero-content { text-align: center; width: 90%; }
-        .hero-badge-icon { font-size: 5rem; color: var(--accent-gold); animation: glow 2s infinite alternate; margin-bottom: 15px;}
-        .hero-title-text { font-size: 3rem; font-weight: 900; color: white; text-transform: uppercase; line-height: 1.1; margin-bottom: 10px;}
-        .hero-subtitle-text { font-size: 1.5rem; color: white; font-weight: 300; }
-        .hero-highlight { color: var(--accent-gold); font-weight: bold; }
-        @keyframes glow { from { text-shadow: 0 0 20px var(--accent-gold); } to { text-shadow: 0 0 50px var(--accent-gold); } }
 
-        /* FOOTER */
-        footer { background: var(--dark-red); color: rgba(255,255,255,0.8); padding: 20px; margin-top: auto; text-align: center;}
-        .footer-content { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
-        .footer-link { color: white; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        /* --- ส่วนแก้ไขลายน้ำ (Watermark) --- */
+        .watermark-icon {
+            position: absolute; /* ลอยอิสระ */
+            bottom: -10px;      /* ชิดล่าง (ปรับตำแหน่งตามชอบ) */
+            right: 10px;        /* ชิดขวา */
+            font-size: 8rem;    /* ขนาดใหญ่มาก */
+            opacity: 0.1;       /* จางๆ */
+            color: #000;
+            z-index: 0;         /* อยู่ชั้นล่างสุด */
+            pointer-events: none; /* คลิกทะลุได้ */
+        }
 
-        /* --- RESPONSIVE MEDIA QUERIES --- */
-        @media (max-width: 1024px) {
-            /* ปรับ Header บน Tablet/Mobile */
-            header { flex-direction: column; gap: 10px; }
-            .header-center { width: 100%; order: 2; margin-bottom: 5px; }
-            .logo-group-left { order: 1; }
-            .logo-group-right { order: 3; }
-            
-            /* แสดงปุ่ม Toggle Menu */
-            .mobile-menu-btn { display: block; }
-
-            /* ซ่อนเมนูบาร์ปกติ แล้วทำให้เป็น Dropdown */
-            .nav-bar {
-                display: none; /* ซ่อนก่อน */
-                flex-direction: column; /* เรียงแนวตั้ง */
-                width: 100%;
-                padding: 0;
-                gap: 0;
-            }
-            
-            /* Class นี้จะถูกใส่ด้วย JS เมื่อกดปุ่ม */
-            .nav-bar.show { display: flex; }
-
-            .nav-btn {
-                border-radius: 0;
-                border: none;
-                border-bottom: 1px solid rgba(255,255,255,0.05);
-                width: 100%;
-                justify-content: flex-start; /* ชิดซ้าย */
-                padding: 15px 20px;
-                font-size: 1.1rem;
-            }
-            
-            .nav-btn:hover, .nav-btn.active {
-                transform: none; /* ไม่ต้องเด้งในมือถือ */
-                background: rgba(255,255,255,0.2);
-                color: white;
-            }
-            
-            /* ปรับขนาด Font Dashboard */
-            .stat-number { font-size: 3.5rem; }
-            .hero-title-text { font-size: 2.5rem; }
+        /* เนื้อหาในการ์ดต้องอยู่เหนือลายน้ำ */
+        .card-content {
+            position: relative;
+            z-index: 2;
+            padding: 40px 20px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo-group-left">
-            <img src="https://r8way.moph.go.th/r8way/img/R8NEWLOGO.png" class="logo-img" alt="R8">
-            <img src="https://skko.moph.go.th/dward/document_file/skko/common_form_upload_file/20160322201256_410195252.png" class="logo-img" alt="SSJ">
-            <img src="https://swdcph.moph.go.th/intranet/login/images/logo_swd.png" class="logo-img" alt="Hospital">
-        </div>
-        <div class="header-center">
-            <h1 class="header-title">Event Quick Big Win</h1>
-            <h2 class="header-subtitle">บูธรณรงค์และรับบริจาคอวัยวะ</h2>
-        </div>
-        <div class="logo-group-right">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/MorProm_Logo.png/600px-MorProm_Logo.png" alt="MorProm">
+    <header class="top-header">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="logos-left d-flex gap-2">
+                <img src="https://via.placeholder.com/50x50?text=Logo1" alt="Logo">
+                <img src="https://via.placeholder.com/50x50?text=Logo2" alt="Logo">
+            </div>
+            
+            <div class="header-center">
+                <h2 class="header-title m-0">EVENT QUICK BIG WIN หมอพร้อม SUPER APP 254DECEMBER 2025</h2>
+                <p class="header-subtitle m-0">บูธกิจกรรมรณรงค์และรับบริจาคอวัยวะ โรงพยาบาลสมเด็จพระยุพราชสว่างแดนดิน</p>
+            </div>
+
+            <div class="logos-right">
+                <img src="https://via.placeholder.com/100x40?text=MorProm" alt="MorProm">
+            </div>
         </div>
     </header>
 
-    <button class="mobile-menu-btn" onclick="toggleMenu()">
-        <i class="fa-solid fa-bars"></i> เมนูหลัก / เลือกกิจกรรม
-    </button>
+    <div class="main-navbar text-center">
+        <a href="#" class="nav-btn active"><i class="fa-solid fa-chart-line"></i> สรุปแดชบอร์ด</a>
+        <a href="#" class="nav-btn"><i class="fa-solid fa-video"></i> ระบบนับคน (AI)</a>
+        <a href="#" class="nav-btn"><i class="fa-solid fa-hand-holding-heart"></i> ลงทะเบียนบริจาคอวัยวะ</a>
+        <a href="#" class="nav-btn"><i class="fa-solid fa-gift"></i> ลุ้นรางวัล Big Win</a>
+        <a href="#" class="nav-btn"><i class="fa-solid fa-user-check"></i> Digital Hero Scan</a>
+    </div>
 
-    <nav class="nav-bar" id="mainNav">
-        <button class="nav-btn active" onclick="switchPage('dashboard')"><i class="fa-solid fa-chart-line"></i> สรุปแดชบอร์ด</button>
-        <button class="nav-btn" onclick="switchPage('ai-camera')"><i class="fa-solid fa-video"></i> ระบบนับคน (AI)</button>
-        <button class="nav-btn" onclick="switchPage('donation')"><i class="fa-solid fa-hand-holding-heart"></i> ลงทะเบียนบริจาค</button>
-        <button class="nav-btn" onclick="window.open('lucky_game.html', '_blank')"><i class="fa-solid fa-gift"></i> ลุ้นรางวัล Big Win</button>
-        <button class="nav-btn" onclick="window.open('hero_scan.html', '_blank')"><i class="fa-solid fa-user-astronaut"></i> Hero Scan</button>
-    </nav>
-
-    <div id="dashboard" class="content-container active">
-        <div class="dashboard-header">
-            <div class="last-update"><i class="fa-solid fa-clock"></i> อัปเดต: <span id="updateTime">-</span></div>
-            <button class="refresh-btn" onclick="fetchDataManual()"><i class="fa-solid fa-rotate-right"></i> รีเฟรช</button>
-        </div>
-        <div class="stats-grid">
-            <div class="stat-card visitor">
-                <i class="fa-solid fa-users stat-icon-bg"></i><i class="fa-solid fa-users stat-icon"></i>
-                <div class="stat-number" id="val-visitor">0</div><div class="stat-label">ผู้เข้าชมบูธ</div>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between mb-3">
+            <div class="text-muted">
+                <i class="fa-regular fa-clock"></i> อัปเดต: <span id="current-time">12:00:00</span>
             </div>
-            <div class="stat-card organ">
-                <i class="fa-solid fa-heart-pulse stat-icon-bg"></i><i class="fa-solid fa-heart-pulse stat-icon"></i>
-                <div class="stat-number" id="val-organ">0</div><div class="stat-label">บริจาคอวัยวะ</div>
-            </div>
-            <div class="stat-card eye">
-                <i class="fa-solid fa-eye stat-icon-bg"></i><i class="fa-solid fa-eye stat-icon"></i>
-                <div class="stat-number" id="val-eye">0</div><div class="stat-label">บริจาคดวงตา</div>
-            </div>
+            <button class="btn btn-outline-info btn-sm rounded-pill px-3" onclick="location.reload()">
+                <i class="fa-solid fa-rotate-right"></i> รีเฟรช
+            </button>
         </div>
-    </div>
 
-    <div id="ai-camera" class="content-container">
-        <div style="width: 100%; height: 75vh; border-radius: 20px; overflow: hidden; border: 3px solid var(--digital-cyan); box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-            <iframe src="ai_cam.html" style="width:100%; height:100%; border:none;" allow="camera; microphone"></iframe>
-        </div>
-    </div>
-
-    <div id="donation" class="content-container">
-        <h2 style="text-align: center; font-size: 1.8rem; color: var(--primary-red);">บันทึกยอดผู้บริจาค (Admin Only)</h2>
-        <div class="donation-wrapper">
-            <button class="donate-btn btn-organ" onclick="sendDonation('organ')"><i class="fa-solid fa-heart-pulse"></i><span>+1 บริจาคอวัยวะ</span></button>
-            <button class="donate-btn btn-eye" onclick="sendDonation('eye')"><i class="fa-solid fa-eye"></i><span>+1 บริจาคดวงตา</span></button>
-        </div>
-    </div>
-
-    <div id="hero-notification">
-        <div class="hero-content">
-            <div class="hero-badge-icon"><i class="fa-solid fa-medal"></i></div>
-            <div class="hero-title-text">HERO FOUND!</div>
-            <div class="hero-subtitle-text" id="hero-msg">ขอต้อนรับ <span class="hero-highlight">ฮีโร่</span> คนใหม่</div>
-        </div>
-    </div>
-
-    <footer>
-        <div class="footer-content">
-            <a href="https://swdcph.moph.go.th" target="_blank" class="footer-link"><i class="fa-solid fa-globe"></i> Website</a>
-            <a href="https://www.facebook.com/swdcph" target="_blank" class="footer-link"><i class="fa-brands fa-facebook"></i> Facebook</a>
-            <div class="footer-link"><i class="fa-solid fa-phone"></i> 042-721-111</div>
-        </div>
-    </footer>
-
-    <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyjbm3yoBaly8pVeXKz1QTpieUe_KjjNWpatAgq_mx3jtkX7zs6vFKm8DXzBCkxNrJm/exec";
-        let lastCounts = { visitor: 0, organ: 0, eye: 0 };
-        let isFirstLoad = true;
-
-        // --- Toggle Menu Function ---
-        function toggleMenu() {
-            const nav = document.getElementById('mainNav');
-            nav.classList.toggle('show');
-        }
-
-        function switchPage(pageId) {
-            // Close menu on mobile after click
-            document.getElementById('mainNav').classList.remove('show');
-
-            document.querySelectorAll('.content-container').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
+        <div class="row g-4">
             
-            // Highlight Button (Need loop because duplicate buttons might exist if optimized, but here simplistic)
-            const btns = document.querySelectorAll('.nav-btn');
-            if(pageId === 'dashboard') { btns[0].classList.add('active'); fetchDataManual(); }
-            if(pageId === 'ai-camera') btns[1].classList.add('active');
-            if(pageId === 'donation') btns[2].classList.add('active');
-        }
+            <div class="col-md-4">
+                <div class="stat-card border-top-teal">
+                    <i class="fa-solid fa-users watermark-icon"></i>
+                    
+                    <div class="card-content">
+                        <i class="fa-solid fa-users main-icon icon-teal"></i>
+                        <div class="d-block mb-2">
+                            <div id="visitor-count" class="odometer">0</div>
+                        </div>
+                        <h5 class="text-muted">จำนวนผู้เข้าชมบูธ</h5>
+                    </div>
+                </div>
+            </div>
 
-        async function fetchDataManual() {
-            try {
-                const response = await fetch(GAS_URL);
-                const data = await response.json();
-                
-                if (!isFirstLoad) {
-                    if (data.organ > lastCounts.organ) triggerHeroPopup("บริจาคอวัยวะ");
-                    else if (data.eye > lastCounts.eye) triggerHeroPopup("บริจาคดวงตา");
-                }
+            <div class="col-md-4">
+                <div class="stat-card border-top-red">
+                    <i class="fa-solid fa-heart-pulse watermark-icon"></i>
+                    
+                    <div class="card-content">
+                        <i class="fa-solid fa-heart-pulse main-icon icon-red"></i>
+                        <div class="d-block mb-2">
+                            <div id="organ-count" class="odometer">0</div>
+                        </div>
+                        <h5 class="text-muted">จำนวนผู้ลงทะเบียนบริจาคอวัยวะ</h5>
+                    </div>
+                </div>
+            </div>
 
-                updateStat("val-visitor", data.visitor);
-                updateStat("val-organ", data.organ);
-                updateStat("val-eye", data.eye);
+            <div class="col-md-4">
+                <div class="stat-card border-top-blue">
+                    <i class="fa-solid fa-eye watermark-icon"></i>
+                    
+                    <div class="card-content">
+                        <i class="fa-solid fa-eye main-icon icon-blue"></i>
+                        <div class="d-block mb-2">
+                            <div id="eye-count" class="odometer">0</div>
+                        </div>
+                        <h5 class="text-muted">จำนวนผู้ลงทะเบียนบริจาคดวงตา</h5>
+                    </div>
+                </div>
+            </div>
 
-                lastCounts = { visitor: data.visitor, organ: data.organ, eye: data.eye };
-                isFirstLoad = false;
-                document.getElementById('updateTime').innerText = new Date().toLocaleTimeString('th-TH');
-            } catch (error) { console.error("Error:", error); }
-        }
+        </div>
+    </div>
 
-        function updateStat(id, val) {
-            const el = document.getElementById(id);
-            if (parseInt(el.innerText) !== val) {
-                el.innerText = val; el.style.transform = "scale(1.2)"; el.style.color = "#D32F2F";
-                setTimeout(() => { el.style.transform = "scale(1)"; el.style.color = "#2C3E50"; }, 300);
-            }
-        }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.7/odometer.min.js"></script>
+    
+    <script>
+        // ตั้งค่า Odometer เบื้องต้น
+        window.odometerOptions = {
+            format: '(,ddd)', // รูปแบบตัวเลข มีลูกน้ำคั่น
+            duration: 2000,   // ระยะเวลาหมุน (ms)
+        };
 
-        function triggerHeroPopup(txt) {
-            document.getElementById('hero-msg').innerHTML = `ขอต้อนรับ <span class="hero-highlight">ฮีโร่ผู้${txt}</span> คนใหม่`;
-            document.getElementById('hero-notification').style.display = 'flex';
-            playWinSound();
-            confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#D32F2F', '#ffffff', '#FFC107'] });
-            setTimeout(() => document.getElementById('hero-notification').style.display = 'none', 6000);
-        }
+        // ฟังก์ชันจำลองการโหลดข้อมูล (หรือเอาไปใช้ตอน Fetch Data จริง)
+        document.addEventListener("DOMContentLoaded", function() {
+            
+            // อัปเดตเวลาปัจจุบัน
+            const updateTime = () => {
+                const now = new Date();
+                document.getElementById('current-time').innerText = now.toLocaleTimeString('th-TH');
+            };
+            updateTime();
+            setInterval(updateTime, 1000);
 
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playWinSound() {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const now = audioCtx.currentTime;
-            [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
-                const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-                o.type = i===3?'square':'triangle'; o.frequency.value = f;
-                g.gain.setValueAtTime(0.1, now+(i*0.15)); g.gain.exponentialRampToValueAtTime(0.001, now+(i*0.15)+0.8);
-                o.connect(g); g.connect(audioCtx.destination); o.start(now+(i*0.15)); o.stop(now+(i*0.15)+1);
-            });
-        }
-
-        setInterval(() => { if (document.getElementById('dashboard').classList.contains('active')) fetchDataManual(); }, 5000);
-        function sendDonation(type) { fetch(GAS_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: type, count: 1 }) }); }
-        fetchDataManual();
+            // *** ส่วนสำคัญ: สั่งให้ตัวเลขหมุน ***
+            // setTimeout ใช้จำลองดีเลย์นิดหน่อยเพื่อให้เห็น Effect ตอนโหลดเสร็จ
+            setTimeout(function(){
+                document.getElementById('visitor-count').innerHTML = 10; // ใส่ค่าตัวแปรจริงตรงนี้
+                document.getElementById('organ-count').innerHTML = 7;
+                document.getElementById('eye-count').innerHTML = 7;
+            }, 500); 
+        });
     </script>
+
 </body>
 </html>
