@@ -70,7 +70,7 @@
             word-wrap: break-word;
             z-index: 2;
             letter-spacing: 2px;
-            transition: color 0.3s; /* Smooth color transition */
+            transition: color 0.3s;
         }
 
         /* Scan Line Animation */
@@ -105,7 +105,7 @@
         .spin-btn:active { transform: translateY(5px); box-shadow: 0 0 10px rgba(255, 215, 0, 0.4), 0 5px 0 var(--secondary); }
         .spin-btn:disabled { filter: grayscale(100%); cursor: wait; transform: translateY(5px); box-shadow: none; }
 
-        /* Admin Button & Modal */
+        /* Admin Styles */
         .admin-btn {
             position: fixed; bottom: 20px; right: 20px;
             background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;
@@ -130,15 +130,17 @@
         
         .status-text { color: rgba(255,255,255,0.6); margin-top: 15px; font-size: 0.9rem; }
 
-        /* Table Styles for Admin */
+        /* Admin Table Styles */
         .reward-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
         .reward-table th { background: #f8f9fa; padding: 8px; text-align: left; border-bottom: 2px solid #ddd; font-weight: bold; color: #555; }
         .reward-table td { padding: 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
         .reward-table tr:hover { background: #f0f7ff; }
         
-        .action-btn { font-size: 0.8rem; padding: 4px 10px; border-radius: 5px; border: none; cursor: pointer; transition: 0.2s; }
+        .action-btn { font-size: 0.8rem; padding: 4px 10px; border-radius: 5px; border: none; cursor: pointer; transition: 0.2s; margin-right: 4px; }
         .btn-edit { background: #ffc107; color: #333; }
         .btn-edit:hover { background: #e0a800; }
+        .btn-delete { background: #dc3545; color: white; }
+        .btn-delete:hover { background: #bb2d3b; }
         
         .color-dot { width: 15px; height: 15px; border-radius: 50%; display: inline-block; border: 1px solid #ccc; vertical-align: middle; }
     </style>
@@ -148,7 +150,7 @@
     <header class="top-header">
         <div class="container text-center">
             <div class="d-flex justify-content-center gap-2 mb-2">
-                <img src="https://r8way.moph.go.th/r8way/img/R8NEWLOGO.png" class="logo-img">
+                <img src="https://img2.pic.in.th/pic/R8NEWLOGO.md.png" class="logo-img">
                 <img src="https://swdcph.moph.go.th/intranet/login/images/logo_swd.png" class="logo-img">
                 <img src="https://mohpromt.moph.go.th/mpc/wp-content/uploads/2021/10/New_logo-mohpormt-01.png" class="logo-img">
             </div>
@@ -165,6 +167,7 @@
     </div>
 
     <div class="game-container">
+        
         <!-- Scanner Display -->
         <div class="scanner-box" id="scannerBox">
             <div class="scan-line"></div>
@@ -182,7 +185,7 @@
         <i class="fa-solid fa-gear"></i>
     </button>
 
-    <!-- Modal เพิ่ม/แก้ไขของรางวัล (Admin) -->
+    <!-- Modal เพิ่ม/แก้ไข/ลบ ของรางวัล (Admin) -->
     <div id="adminModal" class="modal-overlay">
         <div class="modal-box">
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -190,7 +193,7 @@
                 <button type="button" class="btn-close" onclick="closeModal('adminModal')"></button>
             </div>
             
-            <!-- Form สำหรับเพิ่ม/แก้ไข -->
+            <!-- Form -->
             <form id="addRewardForm" onsubmit="submitReward(event)" class="p-3 border rounded bg-light mb-4 shadow-sm">
                 <input type="hidden" id="editId"> <!-- ซ่อน ID ไว้สำหรับตอนแก้ไข -->
                 
@@ -221,11 +224,11 @@
                     </div>
                 </div>
                 <div class="form-text text-danger mt-1" style="font-size: 0.75rem;">
-                    *หากเป็นรางวัลปลอบใจ ให้ตั้งชื่อว่า <b>'ไม่ได้รับรางวัล'</b> (และตั้งโอกาสให้สูงกว่ารางวัลอื่น)
+                    *หากเป็นรางวัลปลอบใจ ให้ตั้งชื่อว่า <b>'ไม่ได้รับรางวัล'</b>
                 </div>
             </form>
 
-            <!-- ตารางแสดงรายการ -->
+            <!-- ตารางรายการ -->
             <h6 class="fw-bold text-secondary border-bottom pb-2"><i class="fa-solid fa-list-check"></i> รายการรางวัลทั้งหมด</h6>
             <div style="max-height: 250px; overflow-y: auto;">
                 <table class="reward-table">
@@ -235,11 +238,10 @@
                             <th width="60" class="text-center">คงเหลือ</th>
                             <th width="60" class="text-center">โอกาส</th>
                             <th width="40" class="text-center">สี</th>
-                            <th width="60" class="text-center">แก้ไข</th>
+                            <th width="80" class="text-center">จัดการ</th>
                         </tr>
                     </thead>
                     <tbody id="rewardTableBody">
-                        <!-- รายการจะถูกใส่ที่นี่ด้วย JS -->
                         <tr><td colspan="5" class="text-center py-3 text-muted">กำลังโหลดข้อมูล...</td></tr>
                     </tbody>
                 </table>
@@ -261,10 +263,10 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <script>
-        // *** ใส่ URL ของคุณที่นี่ (ต้องเป็นเวอร์ชันล่าสุดที่มี action=editReward) ***
+        // *** ใส่ URL ของ Google Apps Script ของคุณที่นี่ ***
         const API_URL = 'https://script.google.com/macros/s/AKfycbyjbm3yoBaly8pVeXKz1QTpieUe_KjjNWpatAgq_mx3jtkX7zs6vFKm8DXzBCkxNrJm/exec';
 
-        // ข้อความปลอบใจ (สุ่มแสดงเมื่อไม่ได้รางวัล)
+        // ข้อความปลอบใจ
         const consolationMessages = [
             "ขอบคุณที่ร่วมสนุก",
             "อาจจะยังน๊าาา",
@@ -275,7 +277,6 @@
             "เกือบได้แล้ว!"
         ];
 
-        // ตัวแปร Global
         let availableRewards = ["LOADING..."]; 
         let fullRewardList = []; // เก็บข้อมูลเต็มเพื่อแสดงในตาราง
         let isScanning = false;
@@ -327,6 +328,9 @@
                         <button class="action-btn btn-edit" onclick="prepareEdit(${item.id})" title="แก้ไข">
                             <i class="fa-solid fa-pen"></i>
                         </button>
+                        <button class="action-btn btn-delete" onclick="confirmDelete(${item.id}, '${item.name}')" title="ลบ">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -335,26 +339,20 @@
 
         // --- 3. Edit Logic ---
         function prepareEdit(id) {
-            // ค้นหาข้อมูลจาก ID
             const item = fullRewardList.find(r => r.id == id);
             if (!item) return;
 
-            // นำข้อมูลใส่ฟอร์ม
             document.getElementById('editId').value = item.id;
             document.getElementById('rewardName').value = item.name;
             document.getElementById('rewardStock').value = item.stock;
             document.getElementById('rewardWeight').value = item.weight;
             document.getElementById('rewardColor').value = item.color;
 
-            // เปลี่ยนปุ่มเป็น Update
             const btn = document.getElementById('saveBtn');
             btn.innerHTML = '<i class="fa-solid fa-check"></i> อัปเดต';
             btn.classList.replace('btn-primary', 'btn-warning');
             
-            // แสดงปุ่มยกเลิก
             document.getElementById('cancelEditBtn').style.display = 'inline-block';
-            
-            // เลื่อน Scroll ไปที่ฟอร์มด้านบน
             document.querySelector('.modal-box').scrollTop = 0;
         }
 
@@ -364,8 +362,7 @@
             
             const btn = document.getElementById('saveBtn');
             btn.innerHTML = '<i class="fa-solid fa-plus"></i> บันทึก';
-            btn.classList.remove('btn-warning');
-            btn.classList.add('btn-primary');
+            btn.classList.replace('btn-warning', 'btn-primary');
             
             document.getElementById('cancelEditBtn').style.display = 'none';
         }
@@ -379,7 +376,6 @@
             btn.disabled = true;
 
             const editId = document.getElementById('editId').value;
-            // ถ้ามี ID = แก้ไข, ถ้าไม่มี = เพิ่มใหม่
             const action = editId ? 'editReward' : 'addReward';
 
             const formBody = new URLSearchParams();
@@ -398,7 +394,7 @@
                 if (result.status === 'success') {
                     alert(result.message || "บันทึกสำเร็จ!");
                     resetForm();
-                    initGame(); // โหลดข้อมูลใหม่เพื่ออัปเดตตาราง
+                    initGame(); // Refresh data
                 } else {
                     alert("Error: " + result.message);
                 }
@@ -411,7 +407,30 @@
             }
         }
 
-        // --- 5. Game Logic (Scanner) ---
+        // --- 5. Delete Logic ---
+        async function confirmDelete(id, name) {
+            if (confirm(`คุณต้องการลบรางวัล "${name}" ใช่หรือไม่?`)) {
+                try {
+                    const formBody = new URLSearchParams();
+                    formBody.append('action', 'deleteReward');
+                    formBody.append('id', id);
+                    
+                    const res = await fetch(API_URL, { method: 'POST', body: formBody });
+                    const result = await res.json();
+                    
+                    if (result.status === 'success') {
+                        alert("ลบข้อมูลสำเร็จ");
+                        initGame(); // Refresh data
+                    } else {
+                        alert("ลบไม่สำเร็จ: " + result.message);
+                    }
+                } catch (err) {
+                    alert("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+                }
+            }
+        }
+
+        // --- 6. Game Logic (Scanner) ---
         async function startScan() {
             if (isScanning) return;
             isScanning = true;
@@ -426,14 +445,14 @@
             playScanSound();
             statusText.innerText = "กำลังสแกนหาผู้โชคดี...";
 
-            // Animation Loop
+            // Animation
             let speed = 50;
             let slowDown = false;
             let targetResult = null;
             let animTimeout;
             
             function loop() {
-                // สุ่มแสดงชื่อ
+                // สุ่มชื่อจากรายการที่มี
                 const randomName = availableRewards[Math.floor(Math.random() * availableRewards.length)];
                 displayText.innerText = randomName;
                 displayText.style.color = "#FF5252";
@@ -449,14 +468,14 @@
             }
             loop();
 
-            // Fetch Result from API
+            // Fetch Result
             try {
                 const res = await fetch(API_URL, { method: 'POST', body: new URLSearchParams({action: 'spin'}) });
                 const result = await res.json();
                 
                 if(result.status === 'success') {
                     targetResult = result;
-                    slowDown = true; // เริ่มช้าลงเมื่อได้ผลลัพธ์
+                    slowDown = true; // เริ่มช้าลง
                 } else {
                     clearTimeout(animTimeout);
                     alert("Error: " + result.message);
@@ -477,7 +496,7 @@
             stopScanSound();
             
             const name = result.rewardName;
-            // เช็คคำว่าเป็นรางวัลปลอบใจหรือไม่
+            // เช็คว่าได้รางวัลหรือไม่
             const isFail = name.includes("ไม่ได้รับ") || name.includes("เสียใจ") || name.includes("ไม่มีรางวัล");
 
             if (isFail) {
