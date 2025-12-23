@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Camera System</title>
+    <title>AI Camera System (Tracking)</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         body { 
             font-family: 'Prompt', sans-serif; 
             text-align: center; 
-            background: transparent; /* พื้นหลังใสเพื่อให้กลมกลืน */
+            background: transparent; 
             margin: 0; 
             padding: 0; 
-            overflow: hidden; /* ซ่อน Scrollbar ของ iframe */
+            overflow: hidden; 
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -71,7 +72,7 @@
         .btn-stop:hover { background: #a93226; }
         button:disabled { background: #bdc3c7; cursor: not-allowed; }
 
-        /* Log ซ่อนไว้เล็กๆ ด้านล่าง */
+        /* Log */
         .log { 
             height: 60px; 
             width: 90%; 
@@ -85,134 +86,48 @@
             border-radius: 5px;
         }
         
-         /* --- Header & Navbar --- */
-        .top-header { background: white; padding: 15px 0; border-bottom: 1px solid #ddd; z-index: 10; }
+        /* --- Header & Navbar --- */
+        .top-header { background: white; padding: 15px 0; border-bottom: 1px solid #ddd; z-index: 10; width: 100%; }
         .logo-img { height: 60px; width: auto; object-fit: contain; margin-right: 10px; transition: transform 0.2s; }
         .logo-img:hover { transform: scale(1.05); }
         .header-title { color: #b00d23; font-weight: 700; text-transform: uppercase; text-align: center; margin: 0; line-height: 1.2; }
         .header-subtitle { color: #008080; text-align: center; font-size: 0.9rem; margin-top: 5px; }
 
-        .main-navbar { background-color: #b00d23; padding: 15px 0; white-space: nowrap; overflow-x: auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); z-index: 9; }
+        .main-navbar { background-color: #b00d23; padding: 15px 0; white-space: nowrap; overflow-x: auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); z-index: 9; width: 100%; }
         .nav-container { display: flex; justify-content: center; gap: 10px; min-width: max-content; padding: 0 15px; }
         .nav-btn { background: rgba(255,255,255,0.15); color: white !important; border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 10px 25px; transition: all 0.3s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; }
         .nav-btn:hover, .nav-btn.active { background: white; color: #b00d23 !important; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-
-        /* --- Stat Cards --- */
-        .stat-card { background: white; border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: relative; overflow: hidden; height: 100%; transition: transform 0.3s; }
-        .stat-card:hover { transform: translateY(-5px); }
-        
-        .border-top-teal { border-top: 6px solid #20c997; }
-        .border-top-red { border-top: 6px solid #dc3545; }
-        .border-top-blue { border-top: 6px solid #0d6efd; }
-
-        .main-icon { font-size: 3.5rem; margin-bottom: 20px; }
-        .icon-teal { color: #20c997; }
-        .icon-red { color: #dc3545; }
-        .icon-blue { color: #0d6efd; }
-
-        .odometer { font-size: 4.5rem; font-weight: 800; color: #333; line-height: 1; }
-        .watermark-icon { position: absolute; bottom: -20px; right: 10px; font-size: 10rem; opacity: 0.08; color: #000; z-index: 0; pointer-events: none; transform: rotate(-15deg); }
-        .card-content { position: relative; z-index: 2; padding: 40px 20px; text-align: center; }
-
-        /* --- Footer --- */
-        .custom-footer { margin-top: auto; background-color: #b00d23; color: white; padding: 30px 0 15px 0; font-size: 0.9rem; }
-        .footer-link { color: white; text-decoration: none; transition: opacity 0.2s; display: inline-flex; align-items: center; gap: 8px; }
-        .footer-link:hover { opacity: 0.8; color: #ffd700; }
-        .footer-divider { margin: 0 10px; opacity: 0.5; }
-        .copyright-text { border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; margin-top: 20px; font-size: 0.8rem; opacity: 0.9; }
-
-        /* --- HERO FOUND POPUP (แจ้งเตือนผู้บริจาคใหม่) --- */
-        .found-modal {
-            display: none; /* ซ่อนไว้ก่อน */
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.95); /* พื้นหลังดำโปร่งแสง */
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            text-align: center;
-        }
-        
-        .found-icon-container { position: relative; margin-bottom: 20px; }
-
-        /* ไอคอนเหรียญทอง */
-        .found-medal {
-            font-size: 12rem;
-            color: #ffd700;
-            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8));
-            animation: pulse 1s infinite; /* เต้นตุบๆ */
-        }
-
-        .found-title {
-            color: #ff6b6b;
-            font-size: 6rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            margin: 0;
-            text-shadow: 0 0 30px rgba(255, 107, 107, 0.8);
-            animation: rubberBand 1s; /* เด้งดึ๋ง */
-        }
-
-        .found-subtitle {
-            font-size: 2.5rem;
-            color: #20c997;
-            font-weight: bold;
-            margin-top: 10px;
-            text-shadow: 0 0 10px rgba(32, 201, 151, 0.5);
-        }
-        
-        .found-desc {
-            color: white;
-            font-size: 1.5rem;
-            opacity: 0.8;
-            margin-top: 10px;
-        }
-
-        .dismiss-btn {
-            margin-top: 40px;
-            background: transparent;
-            border: 2px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 10px 40px;
-            border-radius: 30px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .dismiss-btn:hover { background: white; color: black; }
-
-        /* ปุ่มเปิดเสียง (เผื่อ Browser บล็อกเสียงอัตโนมัติ) */
-        .sound-toggle {
-            position: fixed; bottom: 20px; right: 20px; 
-            background: rgba(0,0,0,0.5); color: white; 
-            border: none; border-radius: 50%; width: 50px; height: 50px;
-            z-index: 100; cursor: pointer; display: flex; align-items: center; justify-content: center;
-        }
-        </style>
+    </style>
 </head>
 <body>
+
     <!-- Header -->
     <header class="top-header">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-4 col-md-12 text-center text-lg-start mb-2 mb-lg-0">
-                    <div class="d-flex justify-content-center justify-content-lg-start gap-2">
+            <div class="row align-items-center" style="display:flex; justify-content:center; flex-wrap:wrap;">
+                <div class="col-lg-12 text-center">
+                    <div style="display:flex; justify-content:center; gap:10px; margin-bottom:10px;">
                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDH91BizHKqi00_QqEcCQ76jrBxJrRGTthfQ&s" class="logo-img" alt="R8">
                         <img src="https://skko.moph.go.th/dward/document_file/skko/common_form_upload_file/20160322201256_410195252.png" class="logo-img" alt="SKKO">
                         <img src="https://swdcph.moph.go.th/intranet/login/images/logo_swd.png" class="logo-img" alt="SWD">
                         <img src="https://mohpromt.moph.go.th/mpc/wp-content/uploads/2021/10/New_logo-mohpormt-01.png" class="logo-img" alt="MorProm" style="height: 55px;">
                     </div>
+                    <h2 class="header-title">EVENT QUICK BIG WIN</h2>
+                    <p class="header-subtitle">บูธกิจกรรมรณรงค์และรับบริจาคอวัยวะ (AI Counter)</p>
                 </div>
-                <div class="col-lg-4 col-md-12 text-center mb-2 mb-lg-0">
-                    <h2 class="header-title">EVENT QUICK BIG WIN<br><span style="font-size: 0.8em; color:#555;">หมอพร้อม SUPER APP</span></h2>
-                    <p class="header-subtitle">บูธกิจกรรมรณรงค์และรับบริจาคอวัยวะ โรงพยาบาลสมเด็จพระยุพราชสว่างแดนดิน <br>24 ธันวาคม 2568</p>
-                </div>
-                
             </div>
         </div>
     </header>
+
+    <!-- Navbar -->
+    <div class="main-navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-btn"><i class="fa-solid fa-chart-line"></i> สรุปแดชบอร์ด</a>
+            <a href="ai_cam.html" class="nav-btn active"><i class="fa-solid fa-video"></i> ระบบนับคน (AI)</a>
+            <a href="lucky_game.html" class="nav-btn"><i class="fa-solid fa-gift"></i> ลุ้นรางวัล Big Win</a>
+            <a href="hero_scan.html" class="nav-btn"><i class="fa-solid fa-user-check"></i> Digital Hero Scan</a>
+        </div>
+    </div>
 
     <div id="loading">⏳ กำลังโหลด AI Model... (กรุณารอสักครู่)</div>
     
@@ -223,7 +138,7 @@
 
     <div class="status-box">
         นับล่าสุด: <span id="countDisplay">0</span> คน 
-        <small>(ข้ามเส้น)</small>
+        <small>(ต้องเดินผ่านเส้นแดง)</small>
     </div>
 
     <div class="btn-group">
@@ -235,26 +150,28 @@
 
     <script>
         // --- ส่วนการตั้งค่า ---
-        // ใส่ URL Google Apps Script เดิมของคุณที่นี่
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyjbm3yoBaly8pVeXKz1QTpieUe_KjjNWpatAgq_mx3jtkX7zs6vFKm8DXzBCkxNrJm/exec"; 
         
-        const LINE_POSITION_PERCENT = 0.6;
-        const COOLDOWN_TIME = 2000;
+        const LINE_POSITION_PERCENT = 0.5; // เส้นกลางจอ (0.5 = 50%)
+        const TRACKING_THRESHOLD = 50; // ระยะห่างสูงสุดที่จะถือว่าเป็นคนเดิม (pixels)
         
         let model;
         let video = document.getElementById("video");
         let canvas = document.getElementById("canvas");
         let ctx = canvas.getContext("2d");
-        let lastSentTime = 0;
         let isModelLoaded = false;
         let isStreaming = false; 
         let animationId = null;
 
+        // ตัวแปรสำหรับ Tracking
+        let trackedObjects = {}; // เก็บ object { id: {x, y, age} }
+        let nextObjectId = 0;
+        
         // โหลดโมเดล
         cocoSsd.load().then(loadedModel => {
             model = loadedModel;
             isModelLoaded = true;
-            document.getElementById("loading").style.display = 'none'; // ซ่อนข้อความโหลด
+            document.getElementById("loading").style.display = 'none'; 
             log("✅ AI พร้อมทำงาน!");
         });
 
@@ -263,8 +180,9 @@
             if (isStreaming) return;
 
             try {
+                // พยายามใช้กล้องหลังถ้าเป็นมือถือ หรือกล้อง webcam ปกติ
                 const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: 'environment' },
+                    video: { width: 640, height: 480, facingMode: 'environment' },
                     audio: false 
                 });
                 video.srcObject = stream;
@@ -277,7 +195,7 @@
                     isStreaming = true;
                     toggleButtons(true);
                     detectFrame();
-                    log("เริ่มการทำงานกล้อง");
+                    log("เริ่มการทำงานกล้อง (Tracking Mode)");
                 };
             } catch (err) {
                 alert("ไม่สามารถเปิดกล้องได้: " + err);
@@ -312,7 +230,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // วาดเส้นแดง
+            // วาดเส้นนับคน (เส้นแดง)
             const lineY = canvas.height * LINE_POSITION_PERCENT;
             ctx.beginPath();
             ctx.moveTo(0, lineY);
@@ -321,28 +239,87 @@
             ctx.lineWidth = 3;
             ctx.stroke();
 
+            // --- Tracking Logic ---
+            let currentFramePeople = [];
+
+            // 1. แปลงผลลัพธ์เป็นจุดกึ่งกลาง (Centroid)
             predictions.forEach(prediction => {
                 if (prediction.class === 'person') {
                     const [x, y, width, height] = prediction.bbox;
-                    const centerY = y + (height / 2);
-
-                    ctx.strokeStyle = "#00FFFF";
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(x, y, width, height);
-
-                    if (Math.abs(centerY - lineY) < 30) {
-                        ctx.strokeStyle = "lime";
-                        ctx.strokeRect(x, y, width, height);
-                        
-                        const now = Date.now();
-                        if (now - lastSentTime > COOLDOWN_TIME) {
-                            sendDataToGAS(1);
-                            lastSentTime = now;
-                        }
-                    }
+                    const centerX = x + (width / 2);
+                    const centerY = y + (height / 2); // ใช้จุดกึ่งกลาง หรือจุดล่าง (เท้า) ก็ได้
+                    currentFramePeople.push({ x: centerX, y: centerY, bbox: prediction.bbox });
                 }
             });
+
+            // 2. จับคู่กับ Tracked Objects เดิม
+            let newTrackedObjects = {};
+            
+            currentFramePeople.forEach(person => {
+                let bestMatchId = null;
+                let minDistance = TRACKING_THRESHOLD; // ต้องอยู่ใกล้กว่าค่านี้ถึงจะนับเป็นคนเดิม
+
+                // หา ID ที่ใกล้ที่สุด
+                for (let id in trackedObjects) {
+                    let obj = trackedObjects[id];
+                    let distance = Math.hypot(person.x - obj.x, person.y - obj.y);
+                    
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        bestMatchId = id;
+                    }
+                }
+
+                if (bestMatchId !== null) {
+                    // *** เจอคนเดิม ***
+                    let oldY = trackedObjects[bestMatchId].y;
+                    let newY = person.y;
+
+                    // อัปเดตข้อมูลใน List ใหม่
+                    newTrackedObjects[bestMatchId] = { x: person.x, y: person.y, age: 0 };
+                    
+                    // *** ตรวจสอบการข้ามเส้น (Logic สำคัญ) ***
+                    // เช็คว่าเดินจาก บน -> ล่าง (ค่า Y เพิ่มขึ้น)
+                    if (oldY < lineY && newY >= lineY) {
+                        // ข้ามเส้นขาเข้า!
+                        sendDataToGAS(1);
+                        drawFlash(canvas.width, canvas.height); // Flash หน้าจอ
+                    }
+                    // ถ้าต้องการนับขาออกด้วย ให้เพิ่ม else if (oldY > lineY && newY <= lineY)
+
+                    // ลบออกจาก trackedObjects เพื่อไม่ให้คนอื่นมา match ซ้ำ
+                    delete trackedObjects[bestMatchId]; 
+                } else {
+                    // *** เจอคนใหม่ ***
+                    newTrackedObjects[nextObjectId++] = { x: person.x, y: person.y, age: 0 };
+                }
+            });
+
+            // อัปเดตรายการ Tracking
+            trackedObjects = newTrackedObjects;
+
+            // 3. วาดผลลัพธ์
+            for (let id in trackedObjects) {
+                let obj = trackedObjects[id];
+                const [x, y, w, h] = [obj.x - 25, obj.y - 50, 50, 100]; // วาดกล่องคร่าวๆ
+                
+                ctx.strokeStyle = "#00FFFF";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, w, h);
+                
+                ctx.fillStyle = "lime";
+                ctx.fillText(`ID: ${id}`, x, y - 5);
+                ctx.beginPath();
+                ctx.arc(obj.x, obj.y, 5, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+
             animationId = requestAnimationFrame(detectFrame);
+        }
+
+        function drawFlash(w, h) {
+            ctx.fillStyle = "rgba(0, 255, 0, 0.3)";
+            ctx.fillRect(0, 0, w, h);
         }
 
         function sendDataToGAS(count) {
@@ -350,18 +327,23 @@
             display.innerText = parseInt(display.innerText) + count;
             
             // Effect ตัวเลขเด้ง
-            display.style.fontSize = "2rem";
-            setTimeout(() => display.style.fontSize = "1.5rem", 200);
+            display.style.fontSize = "2.5rem";
+            display.style.color = "#27ae60";
+            setTimeout(() => {
+                display.style.fontSize = "1.5rem";
+                display.style.color = "#E74C3C";
+            }, 300);
 
+            log("✅ ตรวจพบคนเดินผ่าน +1");
+
+            // ส่งข้อมูล (แบบไม่รอผล เพื่อความลื่นไหล)
             fetch(GAS_URL, {
                 method: "POST",
                 mode: "no-cors", 
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ count: count, type: "entry" })
-            }).then(() => {
-                log("✅ ส่งข้อมูล +1 คน");
             }).catch(err => {
-                log("❌ Error");
+                log("❌ Error ส่งข้อมูล");
             });
         }
 
@@ -372,7 +354,8 @@
 
         function log(msg) {
             const logDiv = document.getElementById("logArea");
-            logDiv.innerHTML = `<div>${msg}</div>` + logDiv.innerHTML;
+            const time = new Date().toLocaleTimeString('th-TH');
+            logDiv.innerHTML = `<div>[${time}] ${msg}</div>` + logDiv.innerHTML;
         }
     </script>
 </body>
