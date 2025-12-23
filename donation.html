@@ -44,13 +44,42 @@
         }
         .type-btn.selected { border-color: #b00d23; background: #fff5f5; color: #b00d23; }
         
-        /* Step 2: Camera */
-        #camera-area { position: relative; width: 100%; max-width: 320px; margin: 0 auto; overflow: hidden; border-radius: 15px; background: #000; }
-        #camera-preview { width: 100%; height: 240px; object-fit: cover; display: block; }
-        #captured-image { width: 100%; max-width: 320px; height: auto; border-radius: 10px; display: none; margin: 0 auto; border: 2px solid #b00d23; }
+        /* Step 2: Photo Preview */
+        #captured-image { width: 100%; max-width: 320px; height: auto; border-radius: 10px; display: none; margin: 0 auto; border: 2px solid #b00d23; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         
         .photo-actions { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
         
+        /* Full Screen Camera Overlay */
+        #fullscreen-camera {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; z-index: 10000; /* อยู่บนสุดเหนือ Modal */
+            display: none; flex-direction: column; justify-content: center; align-items: center;
+        }
+        #camera-preview {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .camera-controls {
+            position: absolute; bottom: 40px; left: 0; width: 100%;
+            display: flex; justify-content: space-around; align-items: center;
+            padding: 0 30px;
+        }
+        .camera-guide {
+            position: absolute; top: 50px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.5); color: white; padding: 8px 20px; border-radius: 20px;
+            font-size: 1rem; pointer-events: none;
+        }
+        .btn-snap {
+            width: 80px; height: 80px; border-radius: 50%; background: #b00d23;
+            border: 4px solid white; color: white; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.1s;
+        }
+        .btn-snap:active { transform: scale(0.9); }
+        .btn-cam-sec {
+            width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.2);
+            border: none; color: white; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; cursor: pointer; backdrop-filter: blur(5px);
+        }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -125,33 +154,23 @@
                         </div>
                     </div>
 
-                    <!-- Step 2: ถ่ายรูป (Optional) -->
+                    <!-- Step 2: จัดการรูปภาพ -->
                     <div id="step2" class="step-container">
                         <h5 class="mb-3 text-secondary">ถ่ายรูปขึ้นจอ Dashboard ไหม?</h5>
                         
-                        <!-- พื้นที่กล้อง -->
-                        <div id="camera-area" style="display:none;">
-                            <video id="camera-preview" autoplay playsinline muted></video>
-                            <canvas id="canvas" style="display:none;"></canvas> <!-- Canvas ซ่อนไว้ใช้ย่อรูป -->
-                            <div class="text-center mt-2 text-white bg-dark rounded-pill py-1 small mx-auto" style="width:150px;">
-                                จัดภาพให้อยู่กึ่งกลาง
-                            </div>
-                        </div>
-                        
                         <!-- พื้นที่โชว์รูปที่ถ่ายแล้ว -->
-                        <img id="captured-image">
+                        <div class="mb-3">
+                            <img id="captured-image">
+                        </div>
 
                         <div class="photo-actions">
-                            <!-- 1. ปุ่มเปิดกล้อง -->
-                            <button id="btn-camera" class="btn btn-outline-danger rounded-pill px-4" onclick="startCamera()">
-                                <i class="fa-solid fa-camera"></i> เปิดกล้อง
+                            <!-- ปุ่มเปิดกล้อง -->
+                            <button id="btn-camera" class="btn btn-outline-danger rounded-pill px-4 py-2 w-100" onclick="startCamera()">
+                                <i class="fa-solid fa-camera"></i> เปิดกล้องถ่ายรูป
                             </button>
-                            <!-- 2. ปุ่มกดถ่าย -->
-                            <button id="btn-snap" class="btn btn-danger rounded-pill px-4" style="display:none;" onclick="takePhoto()">
-                                <i class="fa-solid fa-camera-retro"></i> แชะ!
-                            </button>
-                            <!-- 3. ปุ่มถ่ายใหม่ -->
-                            <button id="btn-retake" class="btn btn-secondary rounded-pill px-4" style="display:none;" onclick="retakePhoto()">
+                            
+                            <!-- ปุ่มถ่ายใหม่ (ซ่อนอยู่ตอนแรก) -->
+                            <button id="btn-retake" class="btn btn-secondary rounded-pill px-4" style="display:none;" onclick="startCamera()">
                                 <i class="fa-solid fa-rotate-left"></i> ถ่ายใหม่
                             </button>
                         </div>
@@ -187,6 +206,20 @@
         </div>
     </div>
 
+    <!-- Full Screen Camera Overlay -->
+    <div id="fullscreen-camera">
+        <video id="camera-preview" autoplay playsinline muted></video>
+        <canvas id="canvas" style="display:none;"></canvas>
+        
+        <div class="camera-guide">จัดภาพให้อยู่กึ่งกลาง</div>
+        
+        <div class="camera-controls">
+            <button class="btn-cam-sec" onclick="stopStream()"><i class="fa-solid fa-xmark"></i></button>
+            <button class="btn-snap" onclick="takePhoto()"><i class="fa-solid fa-camera fa-2x"></i></button>
+            <button class="btn-cam-sec" onclick="switchCamera()"><i class="fa-solid fa-rotate"></i></button>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -196,6 +229,7 @@
         let selectedTypes = { organ: false, eye: false };
         let photoData = null; // เก็บ Base64 ของรูป
         let stream = null;    // เก็บ Stream กล้อง
+        let currentFacingMode = 'environment'; // เริ่มต้นกล้องหลัง
 
         // 1. โหลดข้อมูลยอดบริจาคเมื่อเปิดหน้า
         fetch(API_URL)
@@ -213,12 +247,10 @@
             photoData = null;
             document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
             
-            // ปิดกล้องถ้าเปิดค้างไว้
-            stopStream();
-            document.getElementById('camera-area').style.display = 'none';
+            // Reset UI รูป
             document.getElementById('captured-image').style.display = 'none';
-            document.getElementById('btn-camera').style.display = 'inline-block';
-            document.getElementById('btn-snap').style.display = 'none';
+            document.getElementById('captured-image').src = '';
+            document.getElementById('btn-camera').style.display = 'block';
             document.getElementById('btn-retake').style.display = 'none';
 
             switchStep('step1');
@@ -240,23 +272,26 @@
             switchStep('step2');
         }
 
-        // --- Camera Functions ---
+        // --- Camera Functions (Full Screen) ---
         async function startCamera() {
-            document.getElementById('camera-area').style.display = 'block';
-            document.getElementById('captured-image').style.display = 'none';
-            document.getElementById('btn-camera').style.display = 'none';
-            document.getElementById('btn-snap').style.display = 'inline-block';
-            document.getElementById('btn-retake').style.display = 'none';
+            const camOverlay = document.getElementById('fullscreen-camera');
+            camOverlay.style.display = 'flex'; // เปิด Overlay เต็มจอ
             
             try {
-                // facingMode: 'environment' คือกล้องหลัง (ถ้ามี)
-                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                if (stream) stopStream(); // ปิดอันเก่าถ้ามี
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: currentFacingMode } 
+                });
                 document.getElementById('camera-preview').srcObject = stream;
             } catch(e) {
                 alert("ไม่สามารถเปิดกล้องได้: " + e.message);
-                document.getElementById('camera-area').style.display = 'none';
-                document.getElementById('btn-camera').style.display = 'inline-block';
+                camOverlay.style.display = 'none';
             }
+        }
+
+        function switchCamera() {
+            currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
+            startCamera();
         }
 
         function takePhoto() {
@@ -264,33 +299,36 @@
             const canvas = document.getElementById('canvas');
             
             // กำหนดขนาดรูป (ย่อลงเพื่อส่งเร็วขึ้น)
-            const width = 320;
+            // คำนวณ Aspect Ratio ให้ภาพไม่เบี้ยว
+            const width = 480; // เพิ่มความละเอียดขึ้นนิดหน่อย
             const height = video.videoHeight / (video.videoWidth/width);
             
             canvas.width = width;
             canvas.height = height;
-            canvas.getContext('2d').drawImage(video, 0, 0, width, height);
             
-            // แปลงเป็น Base64 (JPEG quality 0.6)
-            photoData = canvas.toDataURL('image/jpeg', 0.6);
+            // พลิกรูปถ้าเป็นกล้องหน้า (Mirror)
+            const ctx = canvas.getContext('2d');
+            if (currentFacingMode === 'user') {
+                ctx.translate(width, 0);
+                ctx.scale(-1, 1);
+            }
             
-            // แสดงรูปที่ถ่าย
+            ctx.drawImage(video, 0, 0, width, height);
+            
+            // แปลงเป็น Base64 (JPEG quality 0.7)
+            photoData = canvas.toDataURL('image/jpeg', 0.7);
+            
+            // ปิดกล้องเต็มจอ
+            stopStream();
+            
+            // แสดงผลใน Modal Step 2
             const img = document.getElementById('captured-image');
             img.src = photoData;
             img.style.display = 'block';
-            document.getElementById('camera-area').style.display = 'none';
             
-            // หยุดกล้อง
-            stopStream();
-            
-            // ปรับปุ่ม
-            document.getElementById('btn-snap').style.display = 'none';
+            // เปลี่ยนปุ่ม
+            document.getElementById('btn-camera').style.display = 'none';
             document.getElementById('btn-retake').style.display = 'inline-block';
-        }
-
-        function retakePhoto() {
-            photoData = null;
-            startCamera();
         }
 
         function stopStream() {
@@ -298,6 +336,7 @@
                 stream.getTracks().forEach(t => t.stop());
                 stream = null;
             }
+            document.getElementById('fullscreen-camera').style.display = 'none';
         }
 
         function skipPhoto() {
