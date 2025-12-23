@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Digital Hero Scan</title>
+    <title>Digital Hero Scan - สภากาชาดไทย</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -13,6 +13,7 @@
             --primary: #FF5252;   /* แดงนีออน */
             --secondary: #B71C1C; /* แดงเลือดหมู */
             --accent: #FFD700;    /* ทอง */
+            --success: #4CAF50;   /* เขียว */
             --text-glow: 0 0 10px rgba(255, 82, 82, 0.8);
             --hud-bg: rgba(20, 0, 0, 0.9);
         }
@@ -33,7 +34,7 @@
         #ui-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            padding: 20px; box-sizing: border-box; overflow-y: auto; /* ให้เลื่อนได้ */
+            padding: 20px; box-sizing: border-box; overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
 
@@ -48,7 +49,7 @@
             backdrop-filter: blur(4px);
         }
 
-        /* HEADER LOGOS (ย้ายมาไว้ใน Flow ปกติ ไม่ Absolute แล้ว) */
+        /* HEADER LOGOS */
         .header-section {
             display: flex; flex-direction: column; align-items: center; 
             margin-bottom: 20px; text-align: center;
@@ -68,11 +69,11 @@
 
         /* CARDS */
         .glass-card {
-            background: rgba(30, 0, 0, 0.85); /* พื้นหลังแดงมืด */
+            background: rgba(30, 0, 0, 0.85);
             backdrop-filter: blur(10px); padding: 25px; border-radius: 15px;
             border: 1px solid var(--primary); box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
             width: 100%; max-width: 400px; text-align: center; animation: fadeIn 0.5s; 
-            margin-bottom: 50px; /* เว้นที่ด้านล่างเผื่อ Keyboard ขึ้น */
+            margin-bottom: 50px;
         }
 
         h2 { color: var(--primary); margin-top: 0; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 0 10px var(--secondary); font-size: 1.3rem; }
@@ -81,7 +82,7 @@
         input, select {
             width: 100%; padding: 12px; background: rgba(255,255,255,0.1);
             border: 1px solid #555; color: white; border-radius: 8px; font-family: 'Prompt', sans-serif;
-            box-sizing: border-box; /* สำคัญ: ป้องกัน input ล้นกรอบ */
+            box-sizing: border-box;
         }
         input:focus, select:focus { outline: none; border-color: var(--accent); background: rgba(255,255,255,0.15); }
 
@@ -89,7 +90,7 @@
         .quiz-options { display: flex; gap: 10px; margin-bottom: 15px; }
         .quiz-btn {
             flex: 1; padding: 10px; background: rgba(255,255,255,0.1);
-            border: 1px solid #555; color: white; border-radius: 5px; cursor: pointer; transition: 0.2s;
+            border: 1px solid #555; color: white; border-radius: 5px; cursor: pointer; transition: 0.2s; font-size: 0.9rem;
         }
         .quiz-btn.selected {
             background: var(--primary); border-color: var(--primary); color: white; font-weight: bold;
@@ -104,11 +105,6 @@
         }
         .btn-action:hover { transform: scale(1.02); filter: brightness(1.2); }
 
-        /* ADVICE */
-        .advice-box { text-align: left; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 15px; font-size: 0.9rem; }
-        .advice-item { margin-bottom: 8px; display: flex; gap: 10px; align-items: flex-start; }
-        .advice-icon { color: var(--accent); width: 25px; text-align: center; }
-
         /* SCANNER AR OVERLAY */
         #scanner-overlay {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -116,9 +112,11 @@
         }
         .human-silhouette {
             width: 100%; height: 100%;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png');
+            /* เปลี่ยนรูปภาพตามลิ้งค์ที่ระบุ */
+            background-image: url('https://img2.pic.in.th/pic/Gemini_Generated_Image_wbdv3nwbdv3nwbdv.png');
             background-size: contain; background-repeat: no-repeat; background-position: center;
-            opacity: 0.3; filter: drop-shadow(0 0 10px red);
+            opacity: 0.8; 
+            filter: drop-shadow(0 0 10px cyan); 
         }
         .scan-line {
             position: absolute; top: 0; left: -10%; width: 120%; height: 5px;
@@ -179,10 +177,10 @@
             <div class="hud-status">SYSTEM: ONLINE</div>
         </div>
 
-        <!-- LOGOS & TITLE (ย้ายเข้ามาในนี้เพื่อให้เลื่อนหลบได้) -->
+        <!-- LOGOS & TITLE -->
         <div class="header-section">
             <div class="logo-row">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDH91BizHKqi00_QqEcCQ76jrBxJrRGTthfQ&s" class="logo-img" alt="R8">
+                <img src="https://r8way.moph.go.th/r8way/img/R8NEWLOGO.png" class="logo-img" alt="R8">
                 <img src="https://skko.moph.go.th/dward/document_file/skko/common_form_upload_file/20160322201256_410195252.png" class="logo-img" alt="SKKO">
                 <img src="https://swdcph.moph.go.th/intranet/login/images/logo_swd.png" class="logo-img" alt="SWD">
                 <img src="https://mohpromt.moph.go.th/mpc/wp-content/uploads/2021/10/New_logo-mohpormt-01.png" class="logo-img" alt="MorProm">
@@ -201,72 +199,51 @@
                 <option value="female">หญิง</option>
             </select>
             
-            <label>อายุ (Age)</label>
-            <input type="number" id="input-age" placeholder="ระบุอายุของท่าน">
+            <label>อายุ (Age) *สำคัญในการประเมิน</label>
+            <input type="number" id="input-age" placeholder="ระบุอายุของท่าน (ปี)">
             
-            <label>โรคประจำตัว (Diseases)</label>
-            <input type="text" id="input-disease" placeholder="ระบุโรค (ถ้ามี) หรือขีด -">
-            
-            <button class="btn-action" onclick="goToStep('step-quiz')">ถัดไป <i class="fa-solid fa-arrow-right"></i></button>
+            <button class="btn-action" onclick="goToStep('step-quiz')">เริ่มการคัดกรอง <i class="fa-solid fa-arrow-right"></i></button>
         </div>
 
-        <!-- STEP 2: Quiz -->
+        <!-- STEP 2: Quiz (Medical Screening) -->
         <div id="step-quiz" class="glass-card hidden">
-            <h2><i class="fa-solid fa-clipboard-check"></i> ประเมินสมรรถภาพ</h2>
+            <h2><i class="fa-solid fa-notes-medical"></i> คัดกรองสุขภาพ</h2>
             
+            <!-- ข้อ 1: โรคติดเชื้อร้ายแรง -->
             <div class="quiz-item">
-                <label>1. จ้องหน้าจอคอม/มือถือ นานเกิน 8 ชม.?</label>
+                <label style="color:#ff8a80;">1. มีเชื้อไวรัสเอดส์, ไวรัสตับอักเสบ บี/ซี หรือโรคมะเร็ง?</label>
                 <div class="quiz-options">
-                    <div class="quiz-btn" onclick="selectQuiz(this, 'eye', 'yes')">ใช่</div>
-                    <div class="quiz-btn" onclick="selectQuiz(this, 'eye', 'no')">ไม่</div>
+                    <div class="quiz-btn" onclick="selectQuiz(this, 'infection', 'yes')">มี</div>
+                    <div class="quiz-btn" onclick="selectQuiz(this, 'infection', 'no')">ไม่มี</div>
                 </div>
             </div>
 
+            <!-- ข้อ 2: โรคเรื้อรัง -->
             <div class="quiz-item">
-                <label>2. ดื่มแอลกอฮอล์บ่อยแค่ไหน?</label>
+                <label>2. มีโรคเรื้อรัง (เบาหวาน, ความดัน, หัวใจ, ไต, ตับ) หรือติดสุรา?</label>
                 <div class="quiz-options">
-                    <div class="quiz-btn" onclick="selectQuiz(this, 'liver', 'yes')">บ่อย</div>
-                    <div class="quiz-btn" onclick="selectQuiz(this, 'liver', 'no')">ไม่ดื่ม/นานๆที</div>
+                    <div class="quiz-btn" onclick="selectQuiz(this, 'chronic', 'yes')">มี</div>
+                    <div class="quiz-btn" onclick="selectQuiz(this, 'chronic', 'no')">ไม่มี</div>
                 </div>
             </div>
 
+            <!-- ข้อ 3: สภาพดวงตา -->
             <div class="quiz-item">
-                <label>3. ชอบทานอาหารรสจัด/เค็มจัด?</label>
+                <label style="color:#81c784;">3. สายตาสั้น/ยาว/เอียง หรือเคยทำเลสิค/ผ่าต้อกระจก?</label>
                 <div class="quiz-options">
-                    <div class="quiz-btn" onclick="selectQuiz(this, 'kidney', 'yes')">ชอบมาก</div>
-                    <div class="quiz-btn" onclick="selectQuiz(this, 'kidney', 'no')">ทานปกติ</div>
+                    <div class="quiz-btn" onclick="selectQuiz(this, 'eye_history', 'yes')">เคย/มี</div>
+                    <div class="quiz-btn" onclick="selectQuiz(this, 'eye_history', 'no')">ไม่เคย</div>
                 </div>
+                <small style="color:#ccc; font-size:0.75rem; display:block; margin-top:-5px;">*ผู้มีปัญหาสายตาเหล่านี้ <u>สามารถ</u> บริจาคดวงตาได้</small>
             </div>
 
-            <div class="quiz-item">
-                <label>4. สูบบุหรี่หรือไม่?</label>
-                <div class="quiz-options">
-                    <div class="quiz-btn" onclick="selectQuiz(this, 'lung', 'yes')">สูบ</div>
-                    <div class="quiz-btn" onclick="selectQuiz(this, 'lung', 'no')">ไม่สูบ</div>
-                </div>
-            </div>
-
-            <button class="btn-action" onclick="processResult()">วิเคราะห์ผล <i class="fa-solid fa-microchip"></i></button>
+            <!-- เปลี่ยนปุ่มเป็น ประมวลผล & สแกน -->
+            <button class="btn-action" onclick="processResult()">ประมวลผล & เริ่มสแกน <i class="fa-solid fa-expand"></i></button>
         </div>
 
-        <!-- STEP 3: Advice (Pre-Scan) -->
-        <div id="step-advice" class="glass-card hidden">
-            <h2 style="color:var(--accent);">ผลวิเคราะห์เบื้องต้น</h2>
-            <div class="hero-badge" style="font-size:3rem; margin:10px 0;"><i class="fa-solid fa-heart-pulse"></i></div>
-            <div id="score-display" style="font-size:1.5rem; font-weight:bold; color:white;">สุขภาพ: 85%</div>
-            
-            <div class="advice-box" id="advice-content">
-                <!-- Advice will be injected here -->
-            </div>
-            
-            <p style="font-size:0.9rem; margin-top:20px; color:#ddd;">
-                แม้ร่างกายไม่สมบูรณ์ 100%<br>แต่คุณยังมีพลังที่จะ <b>"ต่อลมหายใจ"</b> ให้ผู้อื่นได้
-            </p>
-            <button class="btn-action" onclick="startARScan()">เริ่มสแกนร่างกาย (AR) <i class="fa-solid fa-expand"></i></button>
-        </div>
     </div>
 
-    <!-- AR OVERLAY ELEMENTS (อยู่นอก UI Layer) -->
+    <!-- AR OVERLAY ELEMENTS -->
     <div id="scanner-overlay">
         <div class="human-silhouette"></div>
         <div class="scan-line" id="scan-bar"></div>
@@ -297,10 +274,10 @@
 
     <!-- FINAL RESULT SCREEN -->
     <div id="result-screen">
-        <div class="hero-badge"><i class="fa-solid fa-medal"></i></div>
-        <h1 style="margin:10px 0; color:var(--primary);">HERO CONFIRMED</h1>
+        <div class="hero-badge" id="res-badge"><i class="fa-solid fa-medal"></i></div>
+        <h1 style="margin:10px 0; color:var(--primary);">RESULT CONFIRMED</h1>
         <h2 id="res-title" style="margin:0; font-weight:400; color:white;">คุณคือฮีโร่</h2>
-        <p id="res-desc" style="font-size:1.1rem; color:#ccc; margin-bottom: 20px;"></p>
+        <p id="res-desc" style="font-size:1.1rem; color:#ccc; margin-bottom: 20px; padding: 0 10px;"></p>
         
         <div class="qr-box">
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://onelink.to/kzd4yy" alt="Donate QR">
@@ -320,9 +297,10 @@
     </div>
 
     <script>
-        let currentScore = 100;
-        let quizAnswers = { eye: null, liver: null, kidney: null, lung: null };
+        let quizAnswers = { infection: null, chronic: null, eye_history: null };
+        let userAge = 0;
         let dataInterval;
+        let finalResultType = ""; 
 
         // เริ่มกล้อง
         async function startCamera() {
@@ -333,7 +311,7 @@
         }
         window.onload = startCamera;
 
-        // ระบบเสียง Sound Effect
+        // ระบบเสียง
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSound(type) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -362,15 +340,19 @@
             osc.start(); osc.stop(audioCtx.currentTime + (type==='scan'?1:0.5));
         }
 
-        // เปลี่ยนหน้า (Step Navigation)
+        // เปลี่ยนหน้า
         function goToStep(stepId) { 
             playSound('click'); 
-            // ซ่อนทุกการ์ด
+            // เช็คอายุก่อนไป Quiz
+            if (stepId === 'step-quiz') {
+                const ageInput = document.getElementById('input-age').value;
+                if (!ageInput) { alert("กรุณาระบุอายุ"); return; }
+                userAge = parseInt(ageInput);
+            }
+
             document.querySelectorAll('.glass-card').forEach(el => el.classList.add('hidden')); 
-            // แสดงการ์ดถัดไป
             const target = document.getElementById(stepId);
             target.classList.remove('hidden');
-            // เลื่อนจอขึ้นไปบนสุดของการ์ด
             document.getElementById('ui-layer').scrollTo({top: 0, behavior: 'smooth'});
         }
 
@@ -383,48 +365,58 @@
             quizAnswers[type] = val; 
         }
 
-        // ประมวลผลคะแนน
+        // ประมวลผลคะแนน & เริ่มสแกนเลย
         function processResult() {
             if(Object.values(quizAnswers).includes(null)) { alert("กรุณาตอบให้ครบทุกข้อ"); return; }
             
-            let score = 100; 
-            let adviceHTML = "";
+            const hasInfection = quizAnswers.infection === 'yes';
+            const hasChronic = quizAnswers.chronic === 'yes';
             
-            if(quizAnswers.eye === 'yes') { score -= 10; adviceHTML += `<div class="advice-item"><div class="advice-icon"><i class="fa-solid fa-eye"></i></div><div>ดวงตาทำงานหนัก พักสายตาบ้างนะ</div></div>`; }
-            if(quizAnswers.liver === 'yes') { score -= 15; adviceHTML += `<div class="advice-item"><div class="advice-icon"><i class="fa-solid fa-martini-glass-citrus"></i></div><div>ตับเสี่ยงนะ ลดแอลกอฮอล์หน่อย</div></div>`; }
-            if(quizAnswers.kidney === 'yes') { score -= 15; adviceHTML += `<div class="advice-item"><div class="advice-icon"><i class="fa-solid fa-spoon"></i></div><div>ระวังไต ลดเค็มลงนิด</div></div>`; }
-            if(quizAnswers.lung === 'yes') { score -= 20; adviceHTML += `<div class="advice-item"><div class="advice-icon"><i class="fa-solid fa-smoking"></i></div><div>ปอดเสี่ยง เลิกบุหรี่ดีที่สุด</div></div>`; }
+            // ตรวจสอบสิทธิ์
+            const canDonateOrgan = (userAge <= 65) && !hasInfection && !hasChronic;
+            const canDonateEye = (userAge >= 2) && !hasInfection;
+
+            if (hasInfection) {
+                finalResultType = "spirit";
+            } else if (canDonateOrgan && canDonateEye) {
+                finalResultType = "super";
+            } else if (canDonateEye) {
+                finalResultType = "vision";
+            } else {
+                finalResultType = "spirit"; 
+            }
             
-            if(score === 100) adviceHTML = `<div class="advice-item"><div class="advice-icon"><i class="fa-solid fa-check-circle"></i></div><div>สุขภาพเยี่ยมมาก! ดูแลตัวเองดีสุดๆ</div></div>`;
-            
-            currentScore = score;
-            document.getElementById('score-display').innerText = `Health Score: ${score}%`;
-            document.getElementById('advice-content').innerHTML = adviceHTML;
-            
-            goToStep('step-advice');
+            // ข้ามการแสดงผลเบื้องต้น แล้วเข้าสู่โหมดสแกนทันที
+            startARScan();
         }
 
         // เริ่ม AR Scan
         function startARScan() {
             playSound('click'); 
-            // ซ่อน UI Layer ทั้งหมด
+            // ซ่อน UI Layer ทั้งหมด (Card หายไป)
             document.getElementById('ui-layer').style.display = 'none';
-            // แสดง Scanner
+            // แสดง Scanner Overlay
             document.getElementById('scanner-overlay').style.display = 'block'; 
             document.getElementById('scan-bar').style.display = 'block';
             
             startDataStream();
             
             const scanInterval = setInterval(() => playSound('scan'), 2000); 
-            const step = 800; // ความเร็วในการแสดงผลแต่ละจุด
+            const step = 800; 
 
-            setTimeout(() => showOrgan('eye-point'), step * 1); 
-            setTimeout(() => showOrgan('lung-point'), step * 2);
-            setTimeout(() => showOrgan('heart-point'), step * 3); 
-            setTimeout(() => showOrgan('liver-point'), step * 4);
-            setTimeout(() => showOrgan('kidney-point'), step * 5);
+            // Animation sequence (Show organs)
+            if (finalResultType === 'vision') {
+                setTimeout(() => showOrgan('eye-point'), step * 1); 
+                setTimeout(() => showOrgan('eye-point'), step * 3); 
+            } else {
+                setTimeout(() => showOrgan('eye-point'), step * 1); 
+                setTimeout(() => showOrgan('lung-point'), step * 2);
+                setTimeout(() => showOrgan('heart-point'), step * 3); 
+                setTimeout(() => showOrgan('liver-point'), step * 4);
+                setTimeout(() => showOrgan('kidney-point'), step * 5);
+            }
             
-            // จบการสแกน -> แสดงผล
+            // จบการสแกน -> แสดงผลลัพธ์
             setTimeout(() => { 
                 clearInterval(scanInterval); 
                 clearInterval(dataInterval); 
@@ -444,21 +436,25 @@
             
             const resultTitle = document.getElementById('res-title'); 
             const resultDesc = document.getElementById('res-desc');
+            const badge = document.getElementById('res-badge');
             
-            if (currentScore >= 80) { 
-                resultTitle.innerText = "สุขภาพคุณยอดเยี่ยม!"; 
+            if (finalResultType === 'super') { 
+                resultTitle.innerText = "คุณคือ Super Hero!"; 
                 resultTitle.style.color = "#4CAF50"; 
-                resultDesc.innerHTML = `อวัยวะแข็งแรงมาก<br>พร้อมเป็น <b style="color:var(--accent);">Super Hero ต่อลมหายใจได้ 8 ชีวิต</b>`; 
+                badge.innerHTML = '<i class="fa-solid fa-medal" style="color:#4CAF50;"></i>';
+                resultDesc.innerHTML = `ร่างกายคุณยอดเยี่ยมมาก<br>พร้อมเป็นผู้ให้ที่ยิ่งใหญ่ <b style="color:#4CAF50;">ต่อลมหายใจได้ถึง 8 ชีวิต</b>`; 
             }
-            else if (currentScore >= 50) { 
-                resultTitle.innerText = "คุณคือฮีโร่ตัวจริง!"; 
+            else if (finalResultType === 'vision') { 
+                resultTitle.innerText = "คุณคือ Vision Hero!"; 
                 resultTitle.style.color = "#FFD700"; 
-                resultDesc.innerHTML = `สุขภาพปานกลาง แต่ใจยิ่งใหญ่<br>ยังสามารถ <b style="color:var(--accent);">บริจาคบางอวัยวะได้</b>`; 
+                badge.innerHTML = '<i class="fa-solid fa-eye" style="color:#FFD700;"></i>';
+                resultDesc.innerHTML = `แม้ร่างกายมีข้อจำกัดบางประการ<br>แต่ <b style="color:#FFD700;">"ดวงตา"</b> ของคุณยังสร้างปาฏิหาริย์มอบการมองเห็นได้`; 
             }
             else { 
-                resultTitle.innerText = "ใจคุณหล่อมาก!"; 
+                resultTitle.innerText = "หัวใจคุณน่ากราบ!"; 
                 resultTitle.style.color = "#FF5252"; 
-                resultDesc.innerHTML = `แม้ต้องดูแลสุขภาพ แต่การให้ไม่จำกัด<br>คุณยังเป็น <b style="color:var(--accent);">ความหวังของผู้ป่วยได้เสมอ</b>`; 
+                badge.innerHTML = '<i class="fa-solid fa-hand-holding-heart" style="color:#FF5252;"></i>';
+                resultDesc.innerHTML = `แม้ร่างกายอาจไม่เข้าเกณฑ์การบริจาค<br>แต่ <b style="color:#FF5252;">"ความตั้งใจ"</b> ของคุณคือบุญกุศลที่ยิ่งใหญ่ที่สุด`; 
             }
             
             document.getElementById('result-screen').style.display = 'flex';
@@ -470,7 +466,7 @@
             dataInterval = setInterval(() => { 
                 let txt = ""; 
                 for(let i=0; i<5; i++) { 
-                    txt += "Scan: " + Math.random().toString(36).substring(7).toUpperCase() + "<br>"; 
+                    txt += "Analyze: " + Math.random().toString(36).substring(7).toUpperCase() + "<br>"; 
                 } 
                 el.innerHTML = txt; 
             }, 100);
