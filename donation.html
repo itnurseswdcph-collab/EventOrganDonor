@@ -5,275 +5,364 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ลงทะเบียนบริจาค - Hero Registration</title>
     
+    <!-- Libraries -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-
+    
     <style>
-        body {
-            font-family: 'Prompt', sans-serif;
-            background-color: #f4f6f9;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Header Styles */
-        .top-header { background: white; padding: 15px 0; border-bottom: 1px solid #ddd; z-index: 10; }
-        .logo-img { height: 60px; width: auto; object-fit: contain; margin-right: 10px; transition: transform 0.2s; }
-        .logo-img:hover { transform: scale(1.05); }
-        .header-title { color: #b00d23; font-weight: 700; text-transform: uppercase; text-align: center; margin: 0; line-height: 1.2; }
-        .header-subtitle { color: #008080; text-align: center; font-size: 0.9rem; margin-top: 5px; }
-
+        body { font-family: 'Prompt', sans-serif; background-color: #f4f6f9; min-height: 100vh; display: flex; flex-direction: column; }
         
-        .main-navbar { background-color: #b00d23; padding: 15px 0; white-space: nowrap; overflow-x: auto; }
-        .nav-btn { color: white !important; border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 8px 20px; text-decoration: none; margin: 0 5px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; }
-        .nav-btn:hover, .nav-btn.active { background: white; color: #b00d23 !important; }
-
-        /* Donation Buttons Area */
-        .donation-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .donation-btn {
-            border: none;
-            border-radius: 25px;
-            padding: 40px 20px;
-            width: 100%;
-            height: 100%;
-            min-height: 300px; /* ปุ่มใหญ่สะใจ */
-            color: white;
-            text-align: center;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-        }
-
-        .donation-btn:active { transform: scale(0.95); }
-        .donation-btn:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
-
-        .btn-organ { background: linear-gradient(135deg, #ff6b6b 0%, #ee0979 100%); }
-        .btn-eye { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-
-        .btn-icon { font-size: 6rem; margin-bottom: 25px; display: block; }
-        .btn-text { font-size: 2.2rem; font-weight: 700; display: block; }
-        .btn-subtext { font-size: 1.2rem; opacity: 0.9; }
-
-        .btn-watermark {
-            position: absolute;
-            bottom: -30px;
-            right: -30px;
-            font-size: 12rem;
-            opacity: 0.15;
-            transform: rotate(-20deg);
-        }
-
-        /* Modal & Effects */
-        .hero-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.95);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .hero-content { animation: zoomIn 0.5s; }
+        /* Header Stats */
+        .top-header { background: white; padding: 20px 0; border-bottom: 1px solid #ddd; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .stat-card { background: white; border-radius: 15px; padding: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 10px; border: 1px solid #eee; }
+        .stat-num { font-size: 2.5rem; font-weight: 800; color: #b00d23; line-height: 1; margin-top: 5px; }
+        .stat-label { font-size: 0.9rem; color: #666; }
         
-        .medal-icon {
-            font-size: 8rem;
-            color: #ffd700;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
+        /* Main Button */
+        .main-action-area { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .main-btn {
+            background: linear-gradient(135deg, #b00d23 0%, #d63031 100%);
+            color: white; border: none; border-radius: 25px; padding: 40px 20px; width: 100%; max-width: 400px;
+            font-size: 1.6rem; font-weight: bold; box-shadow: 0 15px 30px rgba(176, 13, 35, 0.3);
+            transition: transform 0.2s; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 15px;
         }
+        .main-btn:active { transform: scale(0.95); }
+        .main-btn i { font-size: 4rem; }
 
-        .hero-title {
-            color: #ff6b6b;
-            font-size: 4rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 10px;
-            text-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+        /* Modal Steps */
+        .modal-content { border-radius: 20px; border: none; overflow: hidden; }
+        .modal-header { background: #b00d23; color: white; border: none; }
+        .step-container { display: none; text-align: center; padding: 20px; }
+        .step-container.active { display: block; animation: fadeIn 0.3s; }
+        
+        /* Step 1: Type Selection */
+        .type-btn {
+            width: 100%; padding: 15px; margin: 8px 0; border: 2px solid #eee; border-radius: 15px;
+            background: white; color: #333; font-weight: 600; font-size: 1.2rem; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-
-        .close-modal-btn {
-            margin-top: 40px;
-            padding: 12px 40px;
-            font-size: 1.5rem;
-            border-radius: 50px;
-            background: white;
-            color: #333;
-            border: none;
-            cursor: pointer;
-            transition: 0.3s;
-            font-weight: bold;
-        }
-        .close-modal-btn:hover { transform: scale(1.1); background: #f0f0f0; }
-
-        /* Loading */
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.9);
-            z-index: 9990;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
+        .type-btn.selected { border-color: #b00d23; background: #fff5f5; color: #b00d23; }
+        
+        /* Step 2: Camera */
+        #camera-area { position: relative; width: 100%; max-width: 320px; margin: 0 auto; overflow: hidden; border-radius: 15px; background: #000; }
+        #camera-preview { width: 100%; height: 240px; object-fit: cover; display: block; }
+        #captured-image { width: 100%; max-width: 320px; height: auto; border-radius: 10px; display: none; margin: 0 auto; border: 2px solid #b00d23; }
+        
+        .photo-actions { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <header class="top-header">
+    <!-- 1. Header แสดงยอดปัจจุบัน -->
+    <div class="top-header">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-4 col-md-12 text-center text-lg-start mb-2 mb-lg-0">
-                    <div class="d-flex justify-content-center justify-content-lg-start gap-2">
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDH91BizHKqi00_QqEcCQ76jrBxJrRGTthfQ&s" class="logo-img" alt="R8">
-                        <img src="https://skko.moph.go.th/dward/document_file/skko/common_form_upload_file/20160322201256_410195252.png" class="logo-img" alt="SKKO">
-                        <img src="https://swdcph.moph.go.th/intranet/login/images/logo_swd.png" class="logo-img" alt="SWD">
+            <h5 class="text-center fw-bold mb-3 text-secondary"><i class="fa-solid fa-chart-simple"></i> ยอดผู้บริจาควันนี้</h5>
+            <div class="row g-2">
+                <div class="col-6">
+                    <div class="stat-card">
+                        <i class="fa-solid fa-heart-pulse text-danger fs-3"></i>
+                        <div class="stat-num" id="stat-organ">...</div>
+                        <div class="stat-label">บริจาคอวัยวะ</div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-12 text-center mb-2 mb-lg-0">
-                    <h2 class="header-title">EVENT QUICK BIG WIN<br><span style="font-size: 0.8em; color:#555;">หมอพร้อม SUPER APP</span></h2>
-                    <p class="header-subtitle">บูธกิจกรรมรณรงค์และรับบริจาคอวัยวะ โรงพยาบาลสมเด็จพระยุพราชสว่างแดนดิน <br>24 ธันวาคม 2568</p>
-                </div>
-                <div class="col-lg-4 col-md-12 text-center text-lg-end">
-                    <img src="https://mohpromt.moph.go.th/mpc/wp-content/uploads/2021/10/New_logo-mohpormt-01.png" class="logo-img" alt="MorProm" style="height: 55px;">
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <div class="main-navbar text-center">
-        <a href="index.html" class="nav-btn"><i class="fa-solid fa-chart-line"></i> กลับหน้าแดชบอร์ด</a>
-        <a href="#" class="nav-btn active"><i class="fa-solid fa-hand-holding-heart"></i> ลงทะเบียนบริจาค</a>
-    </div>
-
-    <div class="donation-container">
-        <div class="container">
-            <div class="row g-4 justify-content-center">
-                <!-- ปุ่มบริจาคอวัยวะ -->
-                <div class="col-md-5 col-lg-4">
-                    <button class="donation-btn btn-organ" onclick="submitDonation('organ')">
-                        <i class="fa-solid fa-heart-pulse btn-watermark"></i>
-                        <i class="fa-solid fa-heart-pulse btn-icon"></i>
-                        <span class="btn-text">บริจาคอวัยวะ</span>
-                        <span class="btn-subtext">กดเพื่อลงทะเบียน</span>
-                    </button>
-                </div>
-                <!-- ปุ่มบริจาคดวงตา -->
-                <div class="col-md-5 col-lg-4">
-                    <button class="donation-btn btn-eye" onclick="submitDonation('eye')">
-                        <i class="fa-solid fa-eye btn-watermark"></i>
-                        <i class="fa-solid fa-eye btn-icon"></i>
-                        <span class="btn-text">บริจาคดวงตา</span>
-                        <span class="btn-subtext">กดเพื่อลงทะเบียน</span>
-                    </button>
+                <div class="col-6">
+                    <div class="stat-card">
+                        <i class="fa-solid fa-eye text-primary fs-3"></i>
+                        <div class="stat-num" id="stat-eye">...</div>
+                        <div class="stat-label">บริจาคดวงตา</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Loading -->
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="spinner-border text-danger" style="width: 4rem; height: 4rem;" role="status"></div>
-        <h3 class="mt-3 text-danger fw-bold">กำลังบันทึกข้อมูล...</h3>
+    <!-- 2. ปุ่มหลักขนาดใหญ่ -->
+    <div class="main-action-area">
+        <button class="main-btn" onclick="openRegisterModal()">
+            <i class="fa-solid fa-user-plus"></i>
+            <div>
+                <div>เพิ่มผู้บริจาครายใหม่</div>
+                <small style="font-size: 1rem; opacity: 0.8; font-weight: normal;">(Register New Hero)</small>
+            </div>
+        </button>
+    </div>
+    
+    <div class="text-center pb-4">
+        <a href="index.html" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="fa-solid fa-arrow-left"></i> กลับหน้า Dashboard
+        </a>
     </div>
 
-    <!-- Hero Confirmed Modal -->
-    <div id="heroModal" class="hero-modal">
-        <div class="hero-content">
-            <i class="fa-solid fa-medal medal-icon animate__animated animate__flipInY"></i>
-            <div class="hero-title animate__animated animate__zoomInDown">HERO CONFIRMED</div>
-            <h2 class="text-white mb-2">ขอบคุณที่เป็นผู้ให้ที่ยิ่งใหญ่</h2>
-            <p class="text-white-50 fs-5">ข้อมูลของคุณถูกบันทึกเรียบร้อยแล้ว</p>
-            
-            <button class="close-modal-btn" onclick="closeModal()">
-                <i class="fa-solid fa-check"></i> ตกลง
-            </button>
+    <!-- 3. Modal ขั้นตอนการลงทะเบียน -->
+    <div class="modal fade" id="regModal" data-bs-backdrop="static" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-clipboard-user"></i> ลงทะเบียนฮีโร่</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    
+                    <!-- Step 1: เลือกประเภทการบริจาค -->
+                    <div id="step1" class="step-container active">
+                        <h5 class="mb-4 text-secondary">ผู้บริจาคแจ้งความจำนงเรื่องใดบ้าง?</h5>
+                        
+                        <button class="type-btn" onclick="toggleType(this, 'organ')">
+                            <i class="fa-solid fa-heart-pulse text-danger"></i> บริจาคอวัยวะ
+                        </button>
+                        
+                        <button class="type-btn" onclick="toggleType(this, 'eye')">
+                            <i class="fa-solid fa-eye text-primary"></i> บริจาคดวงตา
+                        </button>
+                        
+                        <div class="mt-4 pt-2">
+                            <button class="btn btn-dark w-100 rounded-pill py-2 fs-5" onclick="toStep2()">
+                                ถัดไป <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: ถ่ายรูป (Optional) -->
+                    <div id="step2" class="step-container">
+                        <h5 class="mb-3 text-secondary">ถ่ายรูปขึ้นจอ Dashboard ไหม?</h5>
+                        
+                        <!-- พื้นที่กล้อง -->
+                        <div id="camera-area" style="display:none;">
+                            <video id="camera-preview" autoplay playsinline muted></video>
+                            <canvas id="canvas" style="display:none;"></canvas> <!-- Canvas ซ่อนไว้ใช้ย่อรูป -->
+                            <div class="text-center mt-2 text-white bg-dark rounded-pill py-1 small mx-auto" style="width:150px;">
+                                จัดภาพให้อยู่กึ่งกลาง
+                            </div>
+                        </div>
+                        
+                        <!-- พื้นที่โชว์รูปที่ถ่ายแล้ว -->
+                        <img id="captured-image">
+
+                        <div class="photo-actions">
+                            <!-- 1. ปุ่มเปิดกล้อง -->
+                            <button id="btn-camera" class="btn btn-outline-danger rounded-pill px-4" onclick="startCamera()">
+                                <i class="fa-solid fa-camera"></i> เปิดกล้อง
+                            </button>
+                            <!-- 2. ปุ่มกดถ่าย -->
+                            <button id="btn-snap" class="btn btn-danger rounded-pill px-4" style="display:none;" onclick="takePhoto()">
+                                <i class="fa-solid fa-camera-retro"></i> แชะ!
+                            </button>
+                            <!-- 3. ปุ่มถ่ายใหม่ -->
+                            <button id="btn-retake" class="btn btn-secondary rounded-pill px-4" style="display:none;" onclick="retakePhoto()">
+                                <i class="fa-solid fa-rotate-left"></i> ถ่ายใหม่
+                            </button>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <button class="btn btn-success w-100 rounded-pill py-3 fw-bold fs-5 shadow-sm" onclick="submitData()">
+                            <i class="fa-solid fa-save"></i> บันทึกข้อมูล
+                        </button>
+                        <button class="btn btn-link text-muted mt-2 text-decoration-none" onclick="skipPhoto()">
+                            ข้าม (ไม่ถ่ายรูป)
+                        </button>
+                    </div>
+
+                    <!-- Step 3: Loading & Success -->
+                    <div id="step3" class="step-container">
+                        <div id="loading-spin">
+                            <div class="spinner-border text-danger mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+                            <h5 class="animate__animated animate__pulse animate__infinite">กำลังส่งข้อมูลขึ้นระบบ...</h5>
+                        </div>
+                        <div id="success-msg" style="display:none;">
+                            <i class="fa-solid fa-circle-check text-success animate__animated animate__bounceIn" style="font-size: 5rem;"></i>
+                            <h3 class="fw-bold mt-3 text-success">บันทึกสำเร็จ!</h3>
+                            <p class="text-muted">ข้อมูลถูกส่งไปที่ Dashboard เรียบร้อยแล้ว</p>
+                            <button class="btn btn-primary rounded-pill px-5 mt-3" data-bs-dismiss="modal" onclick="location.reload()">
+                                ปิดหน้าต่าง
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
     </div>
 
-    <audio id="successSound" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3" preload="auto"></audio>
-
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // *** URL API ของ Google Apps Script ***
         const API_URL = 'https://script.google.com/macros/s/AKfycbyjbm3yoBaly8pVeXKz1QTpieUe_KjjNWpatAgq_mx3jtkX7zs6vFKm8DXzBCkxNrJm/exec';
 
-        function submitDonation(type) {
-            document.getElementById('loadingOverlay').style.display = 'flex';
+        let selectedTypes = { organ: false, eye: false };
+        let photoData = null; // เก็บ Base64 ของรูป
+        let stream = null;    // เก็บ Stream กล้อง
 
-            // ส่งข้อมูลตาม Format ของ doPost
-            const payload = {
-                type: type,
-                count: 1
-            };
+        // 1. โหลดข้อมูลยอดบริจาคเมื่อเปิดหน้า
+        fetch(API_URL)
+            .then(r => r.json())
+            .then(d => {
+                document.getElementById('stat-organ').innerText = d.organ || 0;
+                document.getElementById('stat-eye').innerText = d.eye || 0;
+            })
+            .catch(e => console.log("Load stats error"));
 
-            fetch(API_URL, {
-                method: 'POST',
-                mode: 'no-cors', // สำคัญ: ใช้ no-cors เพื่อยิงเข้า Google Script ได้โดยไม่ติด Browser Policy
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(() => {
-                // รอสักนิดแล้วแสดงผลสำเร็จ (เพราะ no-cors จะไม่คืน response)
-                setTimeout(showSuccess, 1000);
-            })
-            .catch(err => {
-                console.error('Error:', err);
-                showSuccess(); // แสดงผลสำเร็จเพื่อให้ User ใช้งานต่อได้
+        // 2. เปิด Modal ลงทะเบียน
+        function openRegisterModal() {
+            // Reset ค่าต่างๆ
+            selectedTypes = { organ: false, eye: false };
+            photoData = null;
+            document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
+            
+            // ปิดกล้องถ้าเปิดค้างไว้
+            stopStream();
+            document.getElementById('camera-area').style.display = 'none';
+            document.getElementById('captured-image').style.display = 'none';
+            document.getElementById('btn-camera').style.display = 'inline-block';
+            document.getElementById('btn-snap').style.display = 'none';
+            document.getElementById('btn-retake').style.display = 'none';
+
+            switchStep('step1');
+            new bootstrap.Modal(document.getElementById('regModal')).show();
+        }
+
+        // Logic เลือกประเภท
+        function toggleType(btn, type) {
+            selectedTypes[type] = !selectedTypes[type];
+            if(selectedTypes[type]) btn.classList.add('selected');
+            else btn.classList.remove('selected');
+        }
+
+        function toStep2() {
+            if(!selectedTypes.organ && !selectedTypes.eye) {
+                alert("กรุณาเลือกอย่างน้อย 1 รายการครับ");
+                return;
+            }
+            switchStep('step2');
+        }
+
+        // --- Camera Functions ---
+        async function startCamera() {
+            document.getElementById('camera-area').style.display = 'block';
+            document.getElementById('captured-image').style.display = 'none';
+            document.getElementById('btn-camera').style.display = 'none';
+            document.getElementById('btn-snap').style.display = 'inline-block';
+            document.getElementById('btn-retake').style.display = 'none';
+            
+            try {
+                // facingMode: 'environment' คือกล้องหลัง (ถ้ามี)
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                document.getElementById('camera-preview').srcObject = stream;
+            } catch(e) {
+                alert("ไม่สามารถเปิดกล้องได้: " + e.message);
+                document.getElementById('camera-area').style.display = 'none';
+                document.getElementById('btn-camera').style.display = 'inline-block';
+            }
+        }
+
+        function takePhoto() {
+            const video = document.getElementById('camera-preview');
+            const canvas = document.getElementById('canvas');
+            
+            // กำหนดขนาดรูป (ย่อลงเพื่อส่งเร็วขึ้น)
+            const width = 320;
+            const height = video.videoHeight / (video.videoWidth/width);
+            
+            canvas.width = width;
+            canvas.height = height;
+            canvas.getContext('2d').drawImage(video, 0, 0, width, height);
+            
+            // แปลงเป็น Base64 (JPEG quality 0.6)
+            photoData = canvas.toDataURL('image/jpeg', 0.6);
+            
+            // แสดงรูปที่ถ่าย
+            const img = document.getElementById('captured-image');
+            img.src = photoData;
+            img.style.display = 'block';
+            document.getElementById('camera-area').style.display = 'none';
+            
+            // หยุดกล้อง
+            stopStream();
+            
+            // ปรับปุ่ม
+            document.getElementById('btn-snap').style.display = 'none';
+            document.getElementById('btn-retake').style.display = 'inline-block';
+        }
+
+        function retakePhoto() {
+            photoData = null;
+            startCamera();
+        }
+
+        function stopStream() {
+            if(stream) {
+                stream.getTracks().forEach(t => t.stop());
+                stream = null;
+            }
+        }
+
+        function skipPhoto() {
+            photoData = null;
+            submitData();
+        }
+
+        // --- Submit Logic ---
+        function submitData() {
+            switchStep('step3');
+            document.getElementById('loading-spin').style.display = 'block';
+            document.getElementById('success-msg').style.display = 'none';
+
+            // เตรียมรายการที่จะส่ง
+            let tasks = [];
+            if(selectedTypes.organ) tasks.push('organ');
+            if(selectedTypes.eye) tasks.push('eye');
+
+            // ส่งข้อมูลทีละรายการ (Sequential) เพื่อความชัวร์
+            let promiseChain = Promise.resolve();
+
+            tasks.forEach((type, index) => {
+                promiseChain = promiseChain.then(() => {
+                    let payload = { type: type, count: 1 };
+                    
+                    // ส่งรูปภาพไปกับ request แรกอันเดียวพอ (จะได้ไม่เปลือง bandwidth)
+                    if(index === 0 && photoData) {
+                        // ตัด header 'data:image/jpeg;base64,' ออก ส่งแค่เนื้อ base64
+                        payload.image = photoData.split(',')[1]; 
+                    }
+                    
+                    return fetch(API_URL, {
+                        method: 'POST',
+                        mode: 'no-cors', // สำคัญสำหรับ Google Apps Script Web App
+                        headers: {'Content-Type': 'text/plain'},
+                        body: JSON.stringify(payload)
+                    });
+                }).then(() => {
+                    // Delay นิดหน่อยระหว่าง request เพื่อป้องกัน Google Script ชนกัน
+                    return new Promise(resolve => setTimeout(resolve, 800));
+                });
+            });
+
+            promiseChain.then(() => {
+                document.getElementById('loading-spin').style.display = 'none';
+                document.getElementById('success-msg').style.display = 'block';
+                
+                // อัปเดตตัวเลขหน้าเว็บทันที (Feedback ให้ user เห็น)
+                if(selectedTypes.organ) {
+                    let el = document.getElementById('stat-organ');
+                    el.innerText = parseInt(el.innerText || 0) + 1;
+                }
+                if(selectedTypes.eye) {
+                    let el = document.getElementById('stat-eye');
+                    el.innerText = parseInt(el.innerText || 0) + 1;
+                }
+            }).catch(e => {
+                alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + e);
+                location.reload();
             });
         }
 
-        function showSuccess() {
-            document.getElementById('loadingOverlay').style.display = 'none';
-            const modal = document.getElementById('heroModal');
-            const sound = document.getElementById('successSound');
-
-            modal.style.display = 'flex';
-            sound.currentTime = 0;
-            sound.play().catch(e => console.log("Audio needed interaction"));
-            fireConfetti();
-        }
-
-        function closeModal() {
-            document.getElementById('heroModal').style.display = 'none';
-        }
-
-        function fireConfetti() {
-            var duration = 3000;
-            var end = Date.now() + duration;
-            (function frame() {
-                confetti({
-                    particleCount: 5,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0 }
-                });
-                confetti({
-                    particleCount: 5,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1 }
-                });
-                if (Date.now() < end) {
-                    requestAnimationFrame(frame);
-                }
-            }());
+        function switchStep(id) {
+            document.querySelectorAll('.step-container').forEach(d => d.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
     </script>
 </body>
