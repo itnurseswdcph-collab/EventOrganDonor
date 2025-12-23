@@ -36,7 +36,11 @@
         .step-container { display: none; text-align: center; padding: 20px; }
         .step-container.active { display: block; animation: fadeIn 0.3s; }
         
-        /* Step 1: Type Selection */
+        /* Inputs */
+        .form-control-lg { border-radius: 15px; background: #f8f9fa; border: 2px solid #eee; }
+        .form-control-lg:focus { border-color: #b00d23; box-shadow: none; background: #fff; }
+
+        /* Type Selection */
         .type-btn {
             width: 100%; padding: 15px; margin: 8px 0; border: 2px solid #eee; border-radius: 15px;
             background: white; color: #333; font-weight: 600; font-size: 1.2rem; cursor: pointer; transition: 0.2s;
@@ -44,48 +48,28 @@
         }
         .type-btn.selected { border-color: #b00d23; background: #fff5f5; color: #b00d23; }
         
-        /* Step 2: Photo Preview */
+        /* Photo Preview */
         #captured-image { width: 100%; max-width: 320px; height: auto; border-radius: 10px; display: none; margin: 0 auto; border: 2px solid #b00d23; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        
         .photo-actions { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
         
         /* Full Screen Camera Overlay */
         #fullscreen-camera {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: black; z-index: 10000; /* อยู่บนสุดเหนือ Modal */
-            display: none; flex-direction: column; justify-content: center; align-items: center;
+            background: black; z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center;
         }
-        #camera-preview {
-            width: 100%; height: 100%; object-fit: cover;
-        }
-        .camera-controls {
-            position: absolute; bottom: 40px; left: 0; width: 100%;
-            display: flex; justify-content: space-around; align-items: center;
-            padding: 0 30px;
-        }
-        .camera-guide {
-            position: absolute; top: 50px; left: 50%; transform: translateX(-50%);
-            background: rgba(0,0,0,0.5); color: white; padding: 8px 20px; border-radius: 20px;
-            font-size: 1rem; pointer-events: none;
-        }
-        .btn-snap {
-            width: 80px; height: 80px; border-radius: 50%; background: #b00d23;
-            border: 4px solid white; color: white; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.1s;
-        }
+        #camera-preview { width: 100%; height: 100%; object-fit: cover; }
+        .camera-controls { position: absolute; bottom: 40px; left: 0; width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 0 30px; }
+        .camera-guide { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.5); color: white; padding: 8px 20px; border-radius: 20px; font-size: 1rem; pointer-events: none; }
+        .btn-snap { width: 80px; height: 80px; border-radius: 50%; background: #b00d23; border: 4px solid white; color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.1s; }
         .btn-snap:active { transform: scale(0.9); }
-        .btn-cam-sec {
-            width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.2);
-            border: none; color: white; display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; cursor: pointer; backdrop-filter: blur(5px);
-        }
+        .btn-cam-sec { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; backdrop-filter: blur(5px); }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <!-- 1. Header แสดงยอดปัจจุบัน -->
+    <!-- 1. Header -->
     <div class="top-header">
         <div class="container">
             <h5 class="text-center fw-bold mb-3 text-secondary"><i class="fa-solid fa-chart-simple"></i> ยอดผู้บริจาควันนี้</h5>
@@ -108,7 +92,7 @@
         </div>
     </div>
 
-    <!-- 2. ปุ่มหลักขนาดใหญ่ -->
+    <!-- 2. Main Button -->
     <div class="main-action-area">
         <button class="main-btn" onclick="openRegisterModal()">
             <i class="fa-solid fa-user-plus"></i>
@@ -125,7 +109,7 @@
         </a>
     </div>
 
-    <!-- 3. Modal ขั้นตอนการลงทะเบียน -->
+    <!-- 3. Modal -->
     <div class="modal fade" id="regModal" data-bs-backdrop="static" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -135,9 +119,37 @@
                 </div>
                 <div class="modal-body p-0">
                     
-                    <!-- Step 1: เลือกประเภทการบริจาค -->
+                    <!-- Step 1: ข้อมูลผู้บริจาค -->
                     <div id="step1" class="step-container active">
-                        <h5 class="mb-4 text-secondary">ผู้บริจาคแจ้งความจำนงเรื่องใดบ้าง?</h5>
+                        <h5 class="mb-4 text-secondary text-start border-bottom pb-2">1. กรอกข้อมูลผู้บริจาค</h5>
+                        
+                        <div class="mb-3 text-start">
+                            <label class="form-label text-muted">ชื่อจริง</label>
+                            <input type="text" id="firstName" class="form-control form-control-lg" placeholder="สมชาย">
+                        </div>
+                        <div class="mb-3 text-start">
+                            <label class="form-label text-muted">นามสกุล</label>
+                            <input type="text" id="lastName" class="form-control form-control-lg" placeholder="ใจดี">
+                        </div>
+                        <div class="mb-3 text-start">
+                             <label class="form-label text-muted">ข้อความ Banner (เลือกได้)</label>
+                             <select id="message" class="form-select form-select-lg">
+                                 <option value="HERO FOUND">HERO FOUND</option>
+                                 <option value="ขอขอบคุณ">ขอขอบคุณ</option>
+                                 <option value="ผู้เสียสละที่ยิ่งใหญ่">ผู้เสียสละที่ยิ่งใหญ่</option>
+                             </select>
+                        </div>
+
+                        <div class="mt-4 pt-2">
+                            <button class="btn btn-dark w-100 rounded-pill py-2 fs-5" onclick="toStep2()">
+                                ถัดไป <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: เลือกประเภทการบริจาค -->
+                    <div id="step2" class="step-container">
+                        <h5 class="mb-4 text-secondary text-start border-bottom pb-2">2. บริจาคอะไรบ้าง?</h5>
                         
                         <button class="type-btn" onclick="toggleType(this, 'organ')">
                             <i class="fa-solid fa-heart-pulse text-danger"></i> บริจาคอวัยวะ
@@ -147,29 +159,30 @@
                             <i class="fa-solid fa-eye text-primary"></i> บริจาคดวงตา
                         </button>
                         
-                        <div class="mt-4 pt-2">
-                            <button class="btn btn-dark w-100 rounded-pill py-2 fs-5" onclick="toStep2()">
-                                ถัดไป <i class="fa-solid fa-arrow-right"></i>
-                            </button>
+                        <div class="mt-4 pt-2 row">
+                            <div class="col-4">
+                                <button class="btn btn-outline-secondary w-100 rounded-pill py-2" onclick="switchStep('step1')">ย้อนกลับ</button>
+                            </div>
+                            <div class="col-8">
+                                <button class="btn btn-dark w-100 rounded-pill py-2 fs-5" onclick="toStep3()">
+                                    ถัดไป <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Step 2: จัดการรูปภาพ -->
-                    <div id="step2" class="step-container">
-                        <h5 class="mb-3 text-secondary">ถ่ายรูปขึ้นจอ Dashboard ไหม?</h5>
+                    <!-- Step 3: ถ่ายรูป -->
+                    <div id="step3" class="step-container">
+                        <h5 class="mb-3 text-secondary">3. ถ่ายรูปขึ้นจอ Dashboard?</h5>
                         
-                        <!-- พื้นที่โชว์รูปที่ถ่ายแล้ว -->
                         <div class="mb-3">
                             <img id="captured-image">
                         </div>
 
                         <div class="photo-actions">
-                            <!-- ปุ่มเปิดกล้อง -->
                             <button id="btn-camera" class="btn btn-outline-danger rounded-pill px-4 py-2 w-100" onclick="startCamera()">
                                 <i class="fa-solid fa-camera"></i> เปิดกล้องถ่ายรูป
                             </button>
-                            
-                            <!-- ปุ่มถ่ายใหม่ (ซ่อนอยู่ตอนแรก) -->
                             <button id="btn-retake" class="btn btn-secondary rounded-pill px-4" style="display:none;" onclick="startCamera()">
                                 <i class="fa-solid fa-rotate-left"></i> ถ่ายใหม่
                             </button>
@@ -180,13 +193,20 @@
                         <button class="btn btn-success w-100 rounded-pill py-3 fw-bold fs-5 shadow-sm" onclick="submitData()">
                             <i class="fa-solid fa-save"></i> บันทึกข้อมูล
                         </button>
-                        <button class="btn btn-link text-muted mt-2 text-decoration-none" onclick="skipPhoto()">
-                            ข้าม (ไม่ถ่ายรูป)
-                        </button>
+                        <div class="row mt-2">
+                             <div class="col-4">
+                                <button class="btn btn-link text-muted text-decoration-none" onclick="switchStep('step2')">ย้อนกลับ</button>
+                             </div>
+                             <div class="col-8 text-end">
+                                <button class="btn btn-link text-muted text-decoration-none" onclick="skipPhoto()">
+                                    ข้าม (ไม่ถ่ายรูป)
+                                </button>
+                             </div>
+                        </div>
                     </div>
 
-                    <!-- Step 3: Loading & Success -->
-                    <div id="step3" class="step-container">
+                    <!-- Step 4: Loading & Success -->
+                    <div id="step4" class="step-container">
                         <div id="loading-spin">
                             <div class="spinner-border text-danger mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
                             <h5 class="animate__animated animate__pulse animate__infinite">กำลังส่งข้อมูลขึ้นระบบ...</h5>
@@ -206,13 +226,11 @@
         </div>
     </div>
 
-    <!-- Full Screen Camera Overlay -->
+    <!-- Full Screen Camera -->
     <div id="fullscreen-camera">
         <video id="camera-preview" autoplay playsinline muted></video>
         <canvas id="canvas" style="display:none;"></canvas>
-        
         <div class="camera-guide">จัดภาพให้อยู่กึ่งกลาง</div>
-        
         <div class="camera-controls">
             <button class="btn-cam-sec" onclick="stopStream()"><i class="fa-solid fa-xmark"></i></button>
             <button class="btn-snap" onclick="takePhoto()"><i class="fa-solid fa-camera fa-2x"></i></button>
@@ -220,36 +238,31 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // *** URL API ของ Google Apps Script ***
+        // *** URL API ของคุณ (อย่าลืมเปลี่ยนเป็น URL ที่ Deploy ล่าสุด) ***
         const API_URL = 'https://script.google.com/macros/s/AKfycbyjbm3yoBaly8pVeXKz1QTpieUe_KjjNWpatAgq_mx3jtkX7zs6vFKm8DXzBCkxNrJm/exec';
 
         let selectedTypes = { organ: false, eye: false };
-        let photoData = null; // เก็บ Base64 ของรูป
-        let stream = null;    // เก็บ Stream กล้อง
-        let currentFacingMode = 'environment'; // เริ่มต้นกล้องหลัง
+        let photoData = null;
+        let stream = null;
+        let currentFacingMode = 'environment';
 
-        // 1. โหลดข้อมูลยอดบริจาคเมื่อเปิดหน้า
+        // Load Initial Stats
         fetch(API_URL)
             .then(r => r.json())
             .then(d => {
                 document.getElementById('stat-organ').innerText = d.organ || 0;
                 document.getElementById('stat-eye').innerText = d.eye || 0;
-            })
-            .catch(e => console.log("Load stats error"));
+            }).catch(e => console.log("Load stats error"));
 
-        // 2. เปิด Modal ลงทะเบียน
         function openRegisterModal() {
-            // Reset ค่าต่างๆ
             selectedTypes = { organ: false, eye: false };
             photoData = null;
             document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
-            
-            // Reset UI รูป
+            document.getElementById('firstName').value = '';
+            document.getElementById('lastName').value = '';
             document.getElementById('captured-image').style.display = 'none';
-            document.getElementById('captured-image').src = '';
             document.getElementById('btn-camera').style.display = 'block';
             document.getElementById('btn-retake').style.display = 'none';
 
@@ -257,7 +270,6 @@
             new bootstrap.Modal(document.getElementById('regModal')).show();
         }
 
-        // Logic เลือกประเภท
         function toggleType(btn, type) {
             selectedTypes[type] = !selectedTypes[type];
             if(selectedTypes[type]) btn.classList.add('selected');
@@ -265,28 +277,26 @@
         }
 
         function toStep2() {
-            if(!selectedTypes.organ && !selectedTypes.eye) {
-                alert("กรุณาเลือกอย่างน้อย 1 รายการครับ");
-                return;
-            }
+            const fname = document.getElementById('firstName').value.trim();
+            const lname = document.getElementById('lastName').value.trim();
+            if(!fname || !lname) { alert("กรุณากรอกชื่อและนามสกุล"); return; }
             switchStep('step2');
         }
 
-        // --- Camera Functions (Full Screen) ---
+        function toStep3() {
+            if(!selectedTypes.organ && !selectedTypes.eye) { alert("กรุณาเลือกอย่างน้อย 1 รายการ"); return; }
+            switchStep('step3');
+        }
+
+        // --- Camera Logic ---
         async function startCamera() {
             const camOverlay = document.getElementById('fullscreen-camera');
-            camOverlay.style.display = 'flex'; // เปิด Overlay เต็มจอ
-            
+            camOverlay.style.display = 'flex';
             try {
-                if (stream) stopStream(); // ปิดอันเก่าถ้ามี
-                stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: currentFacingMode } 
-                });
+                if (stream) stopStream();
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacingMode } });
                 document.getElementById('camera-preview').srcObject = stream;
-            } catch(e) {
-                alert("ไม่สามารถเปิดกล้องได้: " + e.message);
-                camOverlay.style.display = 'none';
-            }
+            } catch(e) { alert("เปิดกล้องไม่ได้: " + e.message); camOverlay.style.display = 'none'; }
         }
 
         function switchCamera() {
@@ -297,104 +307,69 @@
         function takePhoto() {
             const video = document.getElementById('camera-preview');
             const canvas = document.getElementById('canvas');
-            
-            // กำหนดขนาดรูป (ย่อลงเพื่อส่งเร็วขึ้น)
-            // คำนวณ Aspect Ratio ให้ภาพไม่เบี้ยว
-            const width = 480; // เพิ่มความละเอียดขึ้นนิดหน่อย
+            const width = 480; 
             const height = video.videoHeight / (video.videoWidth/width);
+            canvas.width = width; canvas.height = height;
             
-            canvas.width = width;
-            canvas.height = height;
-            
-            // พลิกรูปถ้าเป็นกล้องหน้า (Mirror)
             const ctx = canvas.getContext('2d');
-            if (currentFacingMode === 'user') {
-                ctx.translate(width, 0);
-                ctx.scale(-1, 1);
-            }
-            
+            if (currentFacingMode === 'user') { ctx.translate(width, 0); ctx.scale(-1, 1); }
             ctx.drawImage(video, 0, 0, width, height);
             
-            // แปลงเป็น Base64 (JPEG quality 0.7)
             photoData = canvas.toDataURL('image/jpeg', 0.7);
-            
-            // ปิดกล้องเต็มจอ
             stopStream();
             
-            // แสดงผลใน Modal Step 2
             const img = document.getElementById('captured-image');
-            img.src = photoData;
-            img.style.display = 'block';
-            
-            // เปลี่ยนปุ่ม
+            img.src = photoData; img.style.display = 'block';
             document.getElementById('btn-camera').style.display = 'none';
             document.getElementById('btn-retake').style.display = 'inline-block';
         }
 
         function stopStream() {
-            if(stream) {
-                stream.getTracks().forEach(t => t.stop());
-                stream = null;
-            }
+            if(stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
             document.getElementById('fullscreen-camera').style.display = 'none';
         }
 
-        function skipPhoto() {
-            photoData = null;
-            submitData();
-        }
+        function skipPhoto() { photoData = null; submitData(); }
 
-        // --- Submit Logic ---
         function submitData() {
-            switchStep('step3');
+            switchStep('step4');
             document.getElementById('loading-spin').style.display = 'block';
             document.getElementById('success-msg').style.display = 'none';
 
-            // เตรียมรายการที่จะส่ง
             let tasks = [];
             if(selectedTypes.organ) tasks.push('organ');
             if(selectedTypes.eye) tasks.push('eye');
 
-            // ส่งข้อมูลทีละรายการ (Sequential) เพื่อความชัวร์
             let promiseChain = Promise.resolve();
 
             tasks.forEach((type, index) => {
                 promiseChain = promiseChain.then(() => {
-                    let payload = { type: type, count: 1 };
+                    let payload = { 
+                        type: type, 
+                        count: 1,
+                        firstName: document.getElementById('firstName').value.trim(),
+                        lastName: document.getElementById('lastName').value.trim(),
+                        message: document.getElementById('message').value
+                    };
                     
-                    // ส่งรูปภาพไปกับ request แรกอันเดียวพอ (จะได้ไม่เปลือง bandwidth)
                     if(index === 0 && photoData) {
-                        // ตัด header 'data:image/jpeg;base64,' ออก ส่งแค่เนื้อ base64
                         payload.image = photoData.split(',')[1]; 
                     }
                     
                     return fetch(API_URL, {
                         method: 'POST',
-                        mode: 'no-cors', // สำคัญสำหรับ Google Apps Script Web App
+                        mode: 'no-cors',
                         headers: {'Content-Type': 'text/plain'},
                         body: JSON.stringify(payload)
                     });
-                }).then(() => {
-                    // Delay นิดหน่อยระหว่าง request เพื่อป้องกัน Google Script ชนกัน
-                    return new Promise(resolve => setTimeout(resolve, 800));
-                });
+                }).then(() => new Promise(resolve => setTimeout(resolve, 800)));
             });
 
             promiseChain.then(() => {
                 document.getElementById('loading-spin').style.display = 'none';
                 document.getElementById('success-msg').style.display = 'block';
-                
-                // อัปเดตตัวเลขหน้าเว็บทันที (Feedback ให้ user เห็น)
-                if(selectedTypes.organ) {
-                    let el = document.getElementById('stat-organ');
-                    el.innerText = parseInt(el.innerText || 0) + 1;
-                }
-                if(selectedTypes.eye) {
-                    let el = document.getElementById('stat-eye');
-                    el.innerText = parseInt(el.innerText || 0) + 1;
-                }
             }).catch(e => {
-                alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + e);
+                alert("เกิดข้อผิดพลาด: " + e);
                 location.reload();
             });
         }
